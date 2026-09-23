@@ -14,6 +14,7 @@
 </head>
 <body>
 
+<title>roBa Keymap Explorer</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 <style>
@@ -110,11 +111,11 @@ footer code{font-family:"IBM Plex Mono",monospace}
   <header class="top">
     <div>
       <h1>roBa Keymap Explorer</h1>
-      <p class="sub">Toda tecla, em toda layer, das duas versões do keymap. Clique numa tecla para ver o que ela faz em cada layer.</p>
+      <p class="sub">Toda tecla, em toda layer. Clique numa tecla para ver o que ela faz em cada uma, e compare com a versão original do keymap.</p>
     </div>
     <div class="switch" role="group" aria-label="Versão do keymap">
-      <button id="btn-old" aria-pressed="true">Firmware atual</button>
-      <button id="btn-new" aria-pressed="false">Depois do patch</button>
+      <button id="btn-new" aria-pressed="true">Firmware BT</button>
+      <button id="btn-old" aria-pressed="false">Firmware original</button>
     </div>
   </header>
 
@@ -137,7 +138,7 @@ footer code{font-family:"IBM Plex Mono",monospace}
 
   <footer>
     Gerado a partir de <code>config/roBa.keymap</code> e do layout físico em <code>config/boards/shields/roBa/roBa.dtsi</code>, branch <code>bt-zmk-0.3</code>.
-    “Firmware atual” = o que está gravado hoje. “Depois do patch” = com Win, Gaming, Gaming Num, Tiling e TWin removidas.
+    “Firmware BT” = o que está gravado hoje, com a metade direita como central. “Firmware original” = a versão que veio do repositório de origem, antes de remover Win, Gaming, Gaming Num, Tiling e TWin.
     Símbolos com Shift (por exemplo <code>?</code> em cima de <code>/</code>) dependem do layout US no computador.
   </footer>
 </div>
@@ -175,7 +176,7 @@ const KINDS = [
   ['mouse','Mouse'],['macro','Macro'],['sys','Bluetooth / sistema'],['trans','Transparente']
 ];
 const NS='http://www.w3.org/2000/svg';
-let which='old', layer='Mac', sel=null;
+let which='new', layer='Mac', sel=null;
 
 const svg=document.getElementById('kb');
 const navEl=document.getElementById('layers');
