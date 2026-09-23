@@ -25,12 +25,12 @@
         device = <&trackball_split>;
 
         scroll {
-            layers = <10>;
+            layers = <5>;
             input-processors = <&zip_xy_transform (INPUT_TRANSFORM_Y_INVERT)>, <&zip_xy_to_scroll_mapper>;
         };
 
         snipe {
-            layers = <11>;
+            layers = <6>;
             input-processors = <&zip_xy_scaler 1 3>;
         };
     };
