@@ -146,3 +146,29 @@
         triggers-per-rotation = <10>;
     };
 };
+
+/*
+ * Disable the external QSPI flash (Puya P25Q16H).
+ *
+ * It is turned on by ZMK's own board overlay, app/boards/seeeduino_xiao_ble.overlay
+ * (&qspi { status = "okay"; ... p25q16h@0 }), not by anything in this repo -- so it
+ * ships enabled on every build here.
+ *
+ * Nothing in a ZMK build uses it: the board sets chosen { zephyr,flash = &flash0; }
+ * and settings live in internal flash via NVS. It only gets initialised and
+ * registered as a PM device.
+ *
+ * Why that matters for deep sleep: qspi_nor_pm_action() (Zephyr drivers/flash/
+ * nrf_qspi_nor.c) can return -EBUSY, and with CONFIG_PM_DEVICE_RUNTIME unset its
+ * SUSPEND path additionally calls qspi_device_init() and propagates its error. Any
+ * device that fails to suspend makes zmk_pm_suspend_devices() return < 0, and
+ * app/src/activity.c then returns *before* sys_poweroff() -- while activity state
+ * is already ZMK_ACTIVITY_SLEEP. Candidate cause of "keyboard dies at deep sleep
+ * and only a power cycle brings it back".
+ *
+ * Applied 2026-09-24 as the zero-risk first test for that failure. See also
+ * CONFIG_PM_DEVICE_RUNTIME=y as the follow-up if this is not enough.
+ */
+&qspi {
+    status = "disabled";
+};
