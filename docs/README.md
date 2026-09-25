@@ -66,6 +66,7 @@ Três perfis, na layer **Super** (P2 + P5):
 
 ## Documentos
 
+- [Changelog desta branch](CHANGELOG.md) — o que mudou, quando e por quê
 - [Guia de migração do dongle ESB para Bluetooth](migracao-bluetooth.md) — o passo a passo completo, com backup e caminho de volta
 - [Guia do firmware antigo, com ESB e dongle](guia-esb-historico.md) — histórico, para consulta se eu voltar ao dongle
 
