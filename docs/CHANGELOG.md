@@ -8,6 +8,37 @@ Toda mudança aqui exige **regravar as duas metades**, salvo onde indicado.
 
 ---
 
+## 2026-09-25 — Slave latency 0 no link com o host (lag do trackball)
+
+O trackball estava arrastado por Bluetooth. Ligando a metade direita no cabo USB o lag **some por completo** —
+e nesse caminho o cursor não passa por nenhum salto BLE (`sensor → central → USB → Mac`). Isso põe o problema
+no link entre a central e o Mac, não no sensor nem no SPI.
+
+O ZMK 0.3 usa, por padrão (`app/Kconfig`):
+
+```
+BT_PERIPHERAL_PREF_MIN_INT   6     # 7,5 ms
+BT_PERIPHERAL_PREF_MAX_INT  12     # 15 ms
+BT_PERIPHERAL_PREF_LATENCY  30     # <-- pode pular 30 eventos seguidos
+BT_PERIPHERAL_PREF_TIMEOUT 400
+```
+
+O intervalo já é bom. A *slave latency* 30 é que permite à metade direita ignorar até 30 eventos de conexão
+seguidos — a 7,5–15 ms, de 225 a 450 ms de silêncio autorizado. Faz sentido para um teclado, que trabalha em
+rajadas; para um dispositivo de apontamento, é suspeito. Daí `CONFIG_BT_PERIPHERAL_PREF_LATENCY=0` no
+`roBa_R.conf`.
+
+**Custo:** bateria. Com latency 0 o rádio acorda em todo evento de conexão.
+
+**Hipótese, não fato documentado.** Em teoria um periférico com dado pendente transmite no evento seguinte
+independente da latency. Não encontrei confirmação disso em doc oficial — o que sustenta a mudança é o teste
+do USB, que é forte.
+
+**Por que não a correção do upstream.** A `main` resolve isso com
+`CONFIG_BT_CTLR_CONN_INTERVAL_LOW_LATENCY=y` (comentado lá como *"Issue #3381: sub-7.5ms low-latency BLE split,
+central side"*), mas esse símbolo **não existe** no `sdk-zephyr v3.5.99-ncs1`, que é o que este build usa —
+conferido no repositório da Nordic. Ele só chega junto com a migração de base.
+
 ## 2026-09-25 — Setas em T invertido e Cmd+espaço removido
 
 **Layer Number, mão direita.** As setas estavam em fila (`← ↓ ↑ →` em H J K L, estilo vim) e nunca entraram
