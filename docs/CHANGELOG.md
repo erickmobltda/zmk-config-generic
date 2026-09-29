@@ -8,6 +8,28 @@ Toda mudança aqui exige **regravar as duas metades**, salvo onde indicado.
 
 ---
 
+## 2026-09-29 — `;` e `/` trocados, Cmd abaixo do Z
+
+**Layer Mac, duas mudanças.**
+
+`;` e `/` trocaram de posição. As duas ficam na mesma coluna do mindinho direito, uma embaixo da outra; agora
+o `/` está na home row e o `;` desceu. O objetivo é a interrogação — `?` é Shift+`/` — que ficava numa
+posição ruim para uso diário.
+
+O custo normal dessa troca seria o `;`, caractere onipresente em código. Não se aplica aqui: quem escreve o
+código hoje é a IA. A troca foi replicada na layer **Symbol**, onde `:` e `?` moram nas mesmas duas posições — assim o par
+continua acompanhando a base: `?` fica em cima, junto com o `/`, e `:` embaixo, junto com o `;`.
+
+**A tecla abaixo do `Z`** (que estava `&none`) virou `&kp LGUI` — um Cmd de verdade, para segurar.
+
+O motivo: o Cmd da home row está no `F`, e `Z X C V` são da mesma mão. Segurar o `F` com o indicador e
+alcançar o `C` com o médio é apertado, então atalhos como Cmd+C exigiam as duas mãos na prática. Com o Cmd no
+mindinho, embaixo do `Z`, dá para fazer Cmd+Z/X/C/V com a esquerda sozinha.
+
+Foi considerado `&sk LGUI` (sticky: toca o Cmd, depois toca a letra, sem simultaneidade), que evitaria o
+estiramento — mas a preferência foi por um modificador convencional, que se segura. Trocar para sticky depois
+é uma linha.
+
 ## 2026-09-25 — Slave latency 0 no link com o host (lag do trackball)
 
 O trackball estava arrastado por Bluetooth. Ligando a metade direita no cabo USB o lag **some por completo** —
