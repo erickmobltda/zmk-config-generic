@@ -8,6 +8,35 @@ Toda mudança aqui exige **regravar as duas metades**, salvo onde indicado.
 
 ---
 
+## 2026-10-04 — Cmd migra para o polegar, setas voltam ao original
+
+Três ajustes depois de usar as mudanças de 25 e 29/09 por alguns dias.
+
+**O Cmd abaixo do `Z` saiu** — voltou a `&none`. Na prática não ficou confortável: a tecla fica uma linha
+*abaixo* da linha do `Z X C V`, então segurar com o mindinho e alcançar as letras era um estiramento, não um
+atalho.
+
+**O polegar P3 virou `space/cmd`** (`&hm LGUI SPACE`, era `&hm LSHFT SPACE`). O polegar é o lugar natural de
+um modificador, e com o Cmd ali o `Cmd+Z/X/C/V` sai com a mão esquerda inteira, sem esticar nada.
+
+O Shift não se perde: ele continua no P4 (`&hk RSHFT RET`), que já tinha. O que se perde é a redundância de
+ter Shift nos dois polegares.
+
+*Efeito colateral aceito:* com Shift só no polegar direito, o `?` (Shift + `/`, agora na home row direita)
+passa a ser polegar + mindinho da **mesma mão**. É viável — dedos distantes, mesmo gesto de um Cmd+A — mas é o
+inverso do que a troca de 29/09 tinha otimizado.
+
+**As setas da Number voltaram ao layout original**, desfazendo o T invertido de 25/09:
+
+```
+sob o  6   7   8   9              ←   ↓   ↑   →
+linha de baixo                   Home PgDn PgUp End
+```
+
+O T invertido tinha a vantagem de ser o arranjo convencional, mas o custo previsto se confirmou: três das
+quatro setas ficavam fora da home row, e navegar exigia mover a mão. Depois de ~10 dias, a fila de quatro na
+home row ganhou — mesmo sendo o arranjo estilo vim que originalmente não tinha pegado.
+
 ## 2026-09-29 — `;` e `/` trocados, Cmd abaixo do Z
 
 **Layer Mac, duas mudanças.**
