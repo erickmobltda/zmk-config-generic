@@ -8,6 +8,54 @@ Toda mudança aqui exige **regravar as duas metades**, salvo onde indicado.
 
 ---
 
+## 2026-10-04 — Troca de host derrubando o outro (Super + Z / Super + X)
+
+Problema antigo: com o teclado conectado no Mac do trabalho, não dava para passar para o pessoal sem ir nas
+configurações de Bluetooth do Mac do trabalho e desconectar na mão.
+
+Agora o `Z` e o `X` da layer Super são macros em vez de `&bt BT_SEL n` direto:
+
+```dts
+bt_to_0: bindings = <&bt BT_SEL 0>, <&bt BT_DISC 1>;   /* Z -> trabalho */
+bt_to_1: bindings = <&bt BT_SEL 1>, <&bt BT_DISC 0>;   /* X -> pessoal  */
+```
+
+O `C` continua `&bt BT_SEL 2`, para um eventual terceiro host.
+
+**A ordem é deliberada.** A [doc do ZMK](https://zmk.dev/docs/keymaps/behaviors/bluetooth) descreve o
+`BT_DISC` como agindo num perfil *"currently connected and inactive"*; no fonte do v0.3.0
+(`behavior_bt.c` → `ble.c:319`, `zmk_ble_prof_disconnect`) não existe essa guarda — ele desconecta o índice
+que receber. Com `BT_SEL` antes do `BT_DISC` funciona nas duas interpretações.
+
+### Por que isso não quebra o wake
+
+Essa era a dúvida que motivou a análise. `app/src/ble.c`:
+
+```c
+static int ble_save_profile(void) {
+    return k_work_reschedule(&ble_save_work, K_MSEC(CONFIG_ZMK_SETTINGS_SAVE_DEBOUNCE));
+}
+```
+
+Com `CONFIG_ZMK_SETTINGS_SAVE_DEBOUNCE` em **60000** (default do `app/Kconfig`), o perfil ativo vai para a
+NVS 60 s depois da troca. O wake do deep sleep é um boot, e no boot o ZMK lê `ble/active_profile` — ou seja,
+**acorda no último perfil selecionado**. O deep sleep só dispara após 30 min de inatividade, então o debounce
+sempre terminou muito antes.
+
+⚠️ **A exceção:** cortar a energia na chave física (ou resetar) **menos de 1 minuto** depois de trocar de
+perfil perde a troca, e ele volta no anterior.
+
+O `BT_DISC` não grava nada e não mexe no bond nem no perfil ativo, então não interfere nisso.
+
+### Limites
+
+- O `BT_DISC` derruba o link **agora**; não impede o outro host de reconectar sozinho depois — o macOS
+  reconecta em dispositivo HID pareado. Não há roubo de teclas (só o perfil ativo recebe), mas a desconexão é
+  momentânea, não uma cerca.
+- Pelo `Kconfig.defconfig` do shield, há `BT_MAX_CONN 7` e 5 perfis, ou seja **folga para os dois Macs
+  conectados ao mesmo tempo**. Em teoria o `BT_SEL` sozinho já deveria bastar, e o sintoma original não se
+  explica por falta de slot. A macro é uma ferramenta a mais, não um diagnóstico.
+
 ## 2026-10-04 — Cmd migra para o polegar, setas voltam ao original
 
 Três ajustes depois de usar as mudanças de 25 e 29/09 por alguns dias.
