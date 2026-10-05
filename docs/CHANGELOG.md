@@ -8,6 +8,14 @@ Toda mudança aqui exige **regravar as duas metades**, salvo onde indicado.
 
 ---
 
+## 2026-10-05 — Tab à direita do `B`
+
+A tecla à direita do `B` na layer Mac estava `&none` desde 25/09, quando o `Cmd+espaço` saiu dali. Agora é
+`&kp TAB`.
+
+O `Tab` continua existindo na layer Number (segurando o P2, na posição do `C`); esta é uma segunda via, na
+base, sem precisar de layer.
+
 ## 2026-10-04 — Troca de host derrubando o outro (Super + Z / Super + X)
 
 Problema antigo: com o teclado conectado no Mac do trabalho, não dava para passar para o pessoal sem ir nas
