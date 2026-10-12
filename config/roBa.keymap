@@ -200,7 +200,7 @@ lower_layer {
  &kp N1               &kp N2               &kp N3               &kp N4               &kp N5               &kp N6               &kp N7               &kp N8               &kp N9               &kp N0               
  &kp LALT             &kp RCTRL            &kp TAB              &kp ESC              &kp LC(B)           &trans               &trans               &kp LEFT             &kp DOWN             &kp UP               &kp RIGHT            &kp BSPC 
  &mo SNIPE            &mo SCROL            &mkp MB2             &mkp MB1             &mkp MB3             &trans               &trans               &kp HOME             &kp PG_DN            &kp PG_UP            &kp END              &kp DEL 
- &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               
+ &trans               &trans               &trans               &trans               &trans               &trans               &kp LS(RET)          &trans               &trans 
             >;
 
             sensor-bindings = <&rot_kp C_VOL_UP C_VOL_DN>;

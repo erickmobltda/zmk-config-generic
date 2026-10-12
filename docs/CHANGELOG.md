@@ -8,6 +8,20 @@ Toda mudança aqui exige **regravar as duas metades**, salvo onde indicado.
 
 ---
 
+## 2026-10-12 — Shift+Enter no P4 da layer Number
+
+A troca do P3 para `space/cmd` (04/10) tirou o Shift+Enter: ele era feito segurando o P3 (Shift) e tocando o
+P4 (Enter), e o P4 sozinho não consegue dar Shift e Enter ao mesmo tempo. Shift+Enter é a quebra de linha sem
+enviar nos chats de IA, então é um atalho frequente.
+
+Solução: na layer Number, o P4 virou `&kp LS(RET)`. Shift+Enter agora é **segurar P2 (polegar esquerdo) e tocar
+P4 (polegar direito)** — um polegar de cada lado.
+
+Alternativa avaliada e descartada: voltar o P3 para `space/shift` e pôr `Cmd+Z/X/C/V/F` nas teclas
+`Z X C V B` da Number. Devolveria o Shift+Enter natural, mas o Cmd com uma mão ficaria restrito a cinco letras
+e Snipe, Scroll e os cliques sairiam da Number (continuariam só na Mouse). Com o P3 em `space/cmd`, o Cmd com
+uma mão vale para todas as letras e a Number fica intacta.
+
 ## 2026-10-12 — Macros de troca de host revertidas
 
 As macros `bt_to_0` / `bt_to_1` (Super + `Z` / `X`, ver 04/10) foram removidas; as duas teclas voltaram a ser
