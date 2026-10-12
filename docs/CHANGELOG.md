@@ -8,6 +8,34 @@ Toda mudança aqui exige **regravar as duas metades**, salvo onde indicado.
 
 ---
 
+## 2026-10-12 — Macros de troca de host revertidas
+
+As macros `bt_to_0` / `bt_to_1` (Super + `Z` / `X`, ver 04/10) foram removidas; as duas teclas voltaram a ser
+`&bt BT_SEL 0` / `&bt BT_SEL 1`.
+
+**Teste feito do zero:** bonds limpos com `BT_CLR` nos perfis 0, 1 e 2, dispositivo esquecido nos dois Macs, e
+pareamento novo de cada Mac com o Bluetooth do outro desligado. Os dois pareamentos funcionaram. Com os dois
+Macs ligados, a troca falhou sempre do mesmo jeito: o `BT_DISC` derruba o Mac anterior, que **reconecta em
+seguida**, e o Mac de destino **nem mostra a opção de conectar**.
+
+**O que se concluiu:**
+
+- A premissa da macro estava errada. O `connected()` do `app/src/ble.c` aceita qualquer host pareado, de
+  qualquer perfil, e o anúncio é geral (o dirigido está comentado). Nada no firmware impede o Mac anterior de
+  voltar — e o `BT_DISC` só provoca essa volta.
+- O ZMK `main` tem o mesmo código; migrar de base não resolve isso.
+- Pelo código, o teclado deveria continuar anunciando para o perfil ativo mesmo com outro host conectado. Na
+  prática não anuncia: **o teclado aceita um host por vez**, apesar de `BT_MAX_CONN 7` no `Kconfig.defconfig`.
+  A causa não está no que foi possível ler (provavelmente no fork do ZMK ou na configuração gerada no build) e
+  ficou em aberto.
+
+**Fluxo de troca que funciona:** desligar o Bluetooth no Mac que você está deixando (Central de Controle) →
+`Super + Z` ou `Super + X` → o teclado conecta no outro.
+
+**Pergunta em aberto para o Charles:** no `roBa_R` desta branch a central deveria aceitar dois hosts ao mesmo
+tempo? Se houver uma limitação conhecida no fork, existe um caminho de firmware; senão, o fluxo acima é o
+melhor disponível.
+
 ## 2026-10-05 — Tab à direita do `B`
 
 A tecla à direita do `B` na layer Mac estava `&none` desde 25/09, quando o `Cmd+espaço` saiu dali. Agora é
@@ -243,6 +271,7 @@ receber ACK. As falhas intermitentes de tecla acabaram.
 ## Notas que valem para qualquer mudança futura
 
 - **Grave sempre as duas metades** quando mexer em `roBa.dtsi` ou nos `.conf` — o `.dtsi` é compartilhado.
+- **Mudança só de keymap: basta gravar a metade direita** (a central). Pela [doc do ZMK](https://zmk.dev/docs/features/split-keyboards), *"for keymap changes it will typically be enough to flash the controller of the central half"*.
 - **Não grave o `settings_reset.uf2`** por engano: ele apaga os pareamentos Bluetooth.
 - **Guarde o `firmware.zip`** de cada versão que funcionar. Os artifacts do GitHub Actions expiram (90 dias por
   padrão), e é o caminho de volta mais rápido quando algo dá errado.
