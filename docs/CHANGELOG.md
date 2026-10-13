@@ -1,0 +1,347 @@
+# Changelog — roBa (branch `bt-zmk-0.3`)
+
+Mudanças da minha configuração, da mais recente para a mais antiga. A `main` segue
+[charlesmst/zmk-config-generic](https://github.com/charlesmst/zmk-config-generic); esta branch é a versão
+Bluetooth, com a metade direita como central e sem dongle.
+
+Toda mudança aqui exige **regravar as duas metades**, salvo onde indicado.
+
+---
+
+## 2026-10-13 — Branch `bt-upstream`: as mudanças da `bt-zmk-0.3` sobre a base atual do upstream
+
+Branch criada a partir do `upstream/main` (`charlesmst/zmk-config-generic`), com as mudanças da `bt-zmk-0.3`
+portadas arquivo por arquivo. **É uma branch de teste:** se não compilar ou se comportar mal, a `bt-zmk-0.3`
+continua sendo a estável.
+
+**O que vem do upstream:** a base nova do firmware (`zmk` em `feat/deskhop-sync`, driver do trackball
+`pmw3610-efogtech`, `sdk-nrf` sem pin), o workflow de CI do ZMK, aceleração do cursor (`sigmoid_accel`), e no
+`roBa_R.conf` o `CONFIG_BT_CTLR_CONN_INTERVAL_LOW_LATENCY` — candidato para o lag do trackball, que não existia
+na base anterior.
+
+**O que foi portado da `bt-zmk-0.3`:**
+
+| Arquivo | O que |
+|---|---|
+| `config/roBa.keymap` | inteiro (7 layers e todos os ajustes) |
+| `build.yaml` | inteiro (alvos `roBa_R`, `roBa_L_enc_inv`, `settings_reset`) |
+| `roBa.dtsi` | QSPI desligado (fix do deep sleep) e Scroll/Snipe nas layers **5/6** — o upstream aponta para 10/11 |
+| `roBa_R.conf`, `roBa_L.conf`, `roBa_L_enc_inv.conf` | sleep de 30 min; na direita, slave latency 0 |
+| `Kconfig.defconfig` | `BT_MAX_CONN 7`, `BT_MAX_PAIRED 7`, `ZMK_SPLIT_BLE_CENTRAL_PERIPHERALS 2` — o upstream removeu; mantidos para o número de perfis e o armazenamento dos bonds não mudarem |
+| `docs/` | inteiro |
+
+**Gravar as duas metades** (a base mudou). Testar: digitação, trackball (inclusive Scroll e Snipe), wake após
+30 min e Bluetooth. Não se sabe se os pareamentos sobrevivem à troca de base; se não, `settings_reset` nas
+duas metades e parear de novo.
+
+## 2026-10-13 — P3 volta a space/shift; atalhos de Cmd na layer Number
+
+O Cmd no polegar (P3 `space/cmd`, desde 04/10) não pegou na prática. O P3 voltou a ser `&hm LSHFT SPACE`, o que
+devolve o Shift+Enter natural (segura P3, toca P4). Por isso o Shift+Enter que tinha ido para o P4 da Number
+(12/10) foi removido — voltou a `&trans`.
+
+O Cmd com uma mão agora vem da layer Number: segura **P2** e toca a letra.
+
+| Tecla na Number | antes | agora |
+|---|---|---|
+| `A` | Alt (Option) | **Cmd+A** |
+| `Z` | Snipe | **Cmd+Z** |
+| `X` | Scroll | **Cmd+X** |
+| `C` | clique direito | **Cmd+C** |
+| `V` | clique esquerdo | **Cmd+V** |
+| `B` | clique do meio | **Cmd+F** |
+
+**O que mudou de lugar:**
+
+- **Cliques, Scroll e Snipe** saem da Number e ficam só na layer **Mouse (P1)**, nas mesmas letras (`C`
+  direito, `V` esquerdo, `B` meio, `X` Scroll, `Z` Snipe). Diferença: na Mouse o `X` é `MO_TOG` — um toque
+  rápido **trava** o scroll ligado.
+- **O Option some da Number.** Era o que permitia Option + ←/→ (pular palavra) e Option + Backspace (apagar
+  palavra) com a Number ativa. Aceito: não é um uso do dia a dia. O Option continua no `D` da Mac (segurando).
+
+O Cmd com uma mão fica restrito a esses seis atalhos; os demais (Cmd+T, W, S, Tab…) voltam a depender do `F`
+da Mac (segurando) ou das duas mãos.
+
+## 2026-10-12 — Shift+Enter no P4 da layer Number
+
+A troca do P3 para `space/cmd` (04/10) tirou o Shift+Enter: ele era feito segurando o P3 (Shift) e tocando o
+P4 (Enter), e o P4 sozinho não consegue dar Shift e Enter ao mesmo tempo. Shift+Enter é a quebra de linha sem
+enviar nos chats de IA, então é um atalho frequente.
+
+Solução: na layer Number, o P4 virou `&kp LS(RET)`. Shift+Enter agora é **segurar P2 (polegar esquerdo) e tocar
+P4 (polegar direito)** — um polegar de cada lado.
+
+Alternativa avaliada e descartada: voltar o P3 para `space/shift` e pôr `Cmd+Z/X/C/V/F` nas teclas
+`Z X C V B` da Number. Devolveria o Shift+Enter natural, mas o Cmd com uma mão ficaria restrito a cinco letras
+e Snipe, Scroll e os cliques sairiam da Number (continuariam só na Mouse). Com o P3 em `space/cmd`, o Cmd com
+uma mão vale para todas as letras e a Number fica intacta.
+
+## 2026-10-12 — Macros de troca de host revertidas
+
+As macros `bt_to_0` / `bt_to_1` (Super + `Z` / `X`, ver 04/10) foram removidas; as duas teclas voltaram a ser
+`&bt BT_SEL 0` / `&bt BT_SEL 1`.
+
+**Teste feito do zero:** bonds limpos com `BT_CLR` nos perfis 0, 1 e 2, dispositivo esquecido nos dois Macs, e
+pareamento novo de cada Mac com o Bluetooth do outro desligado. Os dois pareamentos funcionaram. Com os dois
+Macs ligados, a troca falhou sempre do mesmo jeito: o `BT_DISC` derruba o Mac anterior, que **reconecta em
+seguida**, e o Mac de destino **nem mostra a opção de conectar**.
+
+**O que se concluiu:**
+
+- A premissa da macro estava errada. O `connected()` do `app/src/ble.c` aceita qualquer host pareado, de
+  qualquer perfil, e o anúncio é geral (o dirigido está comentado). Nada no firmware impede o Mac anterior de
+  voltar — e o `BT_DISC` só provoca essa volta.
+- O ZMK `main` tem o mesmo código; migrar de base não resolve isso.
+- Pelo código, o teclado deveria continuar anunciando para o perfil ativo mesmo com outro host conectado. Na
+  prática não anuncia: **o teclado aceita um host por vez**, apesar de `BT_MAX_CONN 7` no `Kconfig.defconfig`.
+  A causa não está no que foi possível ler (provavelmente no fork do ZMK ou na configuração gerada no build) e
+  ficou em aberto.
+
+**Fluxo de troca que funciona:** desligar o Bluetooth no Mac que você está deixando (Central de Controle) →
+`Super + Z` ou `Super + X` → o teclado conecta no outro.
+
+**Pergunta em aberto para o Charles:** no `roBa_R` desta branch a central deveria aceitar dois hosts ao mesmo
+tempo? Se houver uma limitação conhecida no fork, existe um caminho de firmware; senão, o fluxo acima é o
+melhor disponível.
+
+## 2026-10-05 — Tab à direita do `B`
+
+A tecla à direita do `B` na layer Mac estava `&none` desde 25/09, quando o `Cmd+espaço` saiu dali. Agora é
+`&kp TAB`.
+
+O `Tab` continua existindo na layer Number (segurando o P2, na posição do `C`); esta é uma segunda via, na
+base, sem precisar de layer.
+
+## 2026-10-04 — Troca de host derrubando o outro (Super + Z / Super + X)
+
+Problema antigo: com o teclado conectado no Mac do trabalho, não dava para passar para o pessoal sem ir nas
+configurações de Bluetooth do Mac do trabalho e desconectar na mão.
+
+Agora o `Z` e o `X` da layer Super são macros em vez de `&bt BT_SEL n` direto:
+
+```dts
+bt_to_0: bindings = <&bt BT_SEL 0>, <&bt BT_DISC 1>;   /* Z -> trabalho */
+bt_to_1: bindings = <&bt BT_SEL 1>, <&bt BT_DISC 0>;   /* X -> pessoal  */
+```
+
+O `C` continua `&bt BT_SEL 2`, para um eventual terceiro host.
+
+**A ordem é deliberada.** A [doc do ZMK](https://zmk.dev/docs/keymaps/behaviors/bluetooth) descreve o
+`BT_DISC` como agindo num perfil *"currently connected and inactive"*; no fonte do v0.3.0
+(`behavior_bt.c` → `ble.c:319`, `zmk_ble_prof_disconnect`) não existe essa guarda — ele desconecta o índice
+que receber. Com `BT_SEL` antes do `BT_DISC` funciona nas duas interpretações.
+
+### Por que isso não quebra o wake
+
+Essa era a dúvida que motivou a análise. `app/src/ble.c`:
+
+```c
+static int ble_save_profile(void) {
+    return k_work_reschedule(&ble_save_work, K_MSEC(CONFIG_ZMK_SETTINGS_SAVE_DEBOUNCE));
+}
+```
+
+Com `CONFIG_ZMK_SETTINGS_SAVE_DEBOUNCE` em **60000** (default do `app/Kconfig`), o perfil ativo vai para a
+NVS 60 s depois da troca. O wake do deep sleep é um boot, e no boot o ZMK lê `ble/active_profile` — ou seja,
+**acorda no último perfil selecionado**. O deep sleep só dispara após 30 min de inatividade, então o debounce
+sempre terminou muito antes.
+
+⚠️ **A exceção:** cortar a energia na chave física (ou resetar) **menos de 1 minuto** depois de trocar de
+perfil perde a troca, e ele volta no anterior.
+
+O `BT_DISC` não grava nada e não mexe no bond nem no perfil ativo, então não interfere nisso.
+
+### Limites
+
+- O `BT_DISC` derruba o link **agora**; não impede o outro host de reconectar sozinho depois — o macOS
+  reconecta em dispositivo HID pareado. Não há roubo de teclas (só o perfil ativo recebe), mas a desconexão é
+  momentânea, não uma cerca.
+- Pelo `Kconfig.defconfig` do shield, há `BT_MAX_CONN 7` e 5 perfis, ou seja **folga para os dois Macs
+  conectados ao mesmo tempo**. Em teoria o `BT_SEL` sozinho já deveria bastar, e o sintoma original não se
+  explica por falta de slot. A macro é uma ferramenta a mais, não um diagnóstico.
+
+## 2026-10-04 — Cmd migra para o polegar, setas voltam ao original
+
+Três ajustes depois de usar as mudanças de 25 e 29/09 por alguns dias.
+
+**O Cmd abaixo do `Z` saiu** — voltou a `&none`. Na prática não ficou confortável: a tecla fica uma linha
+*abaixo* da linha do `Z X C V`, então segurar com o mindinho e alcançar as letras era um estiramento, não um
+atalho.
+
+**O polegar P3 virou `space/cmd`** (`&hm LGUI SPACE`, era `&hm LSHFT SPACE`). O polegar é o lugar natural de
+um modificador, e com o Cmd ali o `Cmd+Z/X/C/V` sai com a mão esquerda inteira, sem esticar nada.
+
+O Shift não se perde: ele continua no P4 (`&hk RSHFT RET`), que já tinha. O que se perde é a redundância de
+ter Shift nos dois polegares.
+
+*Efeito colateral aceito:* com Shift só no polegar direito, o `?` (Shift + `/`, agora na home row direita)
+passa a ser polegar + mindinho da **mesma mão**. É viável — dedos distantes, mesmo gesto de um Cmd+A — mas é o
+inverso do que a troca de 29/09 tinha otimizado.
+
+**As setas da Number voltaram ao layout original**, desfazendo o T invertido de 25/09:
+
+```
+sob o  6   7   8   9              ←   ↓   ↑   →
+linha de baixo                   Home PgDn PgUp End
+```
+
+O T invertido tinha a vantagem de ser o arranjo convencional, mas o custo previsto se confirmou: três das
+quatro setas ficavam fora da home row, e navegar exigia mover a mão. Depois de ~10 dias, a fila de quatro na
+home row ganhou — mesmo sendo o arranjo estilo vim que originalmente não tinha pegado.
+
+## 2026-09-29 — `;` e `/` trocados, Cmd abaixo do Z
+
+**Layer Mac, duas mudanças.**
+
+`;` e `/` trocaram de posição. As duas ficam na mesma coluna do mindinho direito, uma embaixo da outra; agora
+o `/` está na home row e o `;` desceu. O objetivo é a interrogação — `?` é Shift+`/` — que ficava numa
+posição ruim para uso diário.
+
+O custo normal dessa troca seria o `;`, caractere onipresente em código. Não se aplica aqui: quem escreve o
+código hoje é a IA. A troca foi replicada na layer **Symbol**, onde `:` e `?` moram nas mesmas duas posições — assim o par
+continua acompanhando a base: `?` fica em cima, junto com o `/`, e `:` embaixo, junto com o `;`.
+
+**A tecla abaixo do `Z`** (que estava `&none`) virou `&kp LGUI` — um Cmd de verdade, para segurar.
+
+O motivo: o Cmd da home row está no `F`, e `Z X C V` são da mesma mão. Segurar o `F` com o indicador e
+alcançar o `C` com o médio é apertado, então atalhos como Cmd+C exigiam as duas mãos na prática. Com o Cmd no
+mindinho, embaixo do `Z`, dá para fazer Cmd+Z/X/C/V com a esquerda sozinha.
+
+Foi considerado `&sk LGUI` (sticky: toca o Cmd, depois toca a letra, sem simultaneidade), que evitaria o
+estiramento — mas a preferência foi por um modificador convencional, que se segura. Trocar para sticky depois
+é uma linha.
+
+## 2026-09-25 — Slave latency 0 no link com o host (lag do trackball)
+
+O trackball estava arrastado por Bluetooth. Ligando a metade direita no cabo USB o lag **some por completo** —
+e nesse caminho o cursor não passa por nenhum salto BLE (`sensor → central → USB → Mac`). Isso põe o problema
+no link entre a central e o Mac, não no sensor nem no SPI.
+
+O ZMK 0.3 usa, por padrão (`app/Kconfig`):
+
+```
+BT_PERIPHERAL_PREF_MIN_INT   6     # 7,5 ms
+BT_PERIPHERAL_PREF_MAX_INT  12     # 15 ms
+BT_PERIPHERAL_PREF_LATENCY  30     # <-- pode pular 30 eventos seguidos
+BT_PERIPHERAL_PREF_TIMEOUT 400
+```
+
+O intervalo já é bom. A *slave latency* 30 é que permite à metade direita ignorar até 30 eventos de conexão
+seguidos — a 7,5–15 ms, de 225 a 450 ms de silêncio autorizado. Faz sentido para um teclado, que trabalha em
+rajadas; para um dispositivo de apontamento, é suspeito. Daí `CONFIG_BT_PERIPHERAL_PREF_LATENCY=0` no
+`roBa_R.conf`.
+
+**Custo:** bateria. Com latency 0 o rádio acorda em todo evento de conexão.
+
+**Hipótese, não fato documentado.** Em teoria um periférico com dado pendente transmite no evento seguinte
+independente da latency. Não encontrei confirmação disso em doc oficial — o que sustenta a mudança é o teste
+do USB, que é forte.
+
+**Por que não a correção do upstream.** A `main` resolve isso com
+`CONFIG_BT_CTLR_CONN_INTERVAL_LOW_LATENCY=y` (comentado lá como *"Issue #3381: sub-7.5ms low-latency BLE split,
+central side"*), mas esse símbolo **não existe** no `sdk-zephyr v3.5.99-ncs1`, que é o que este build usa —
+conferido no repositório da Nordic. Ele só chega junto com a migração de base.
+
+## 2026-09-25 — Setas em T invertido e Cmd+espaço removido
+
+**Layer Number, mão direita.** As setas estavam em fila (`← ↓ ↑ →` em H J K L, estilo vim) e nunca entraram
+na memória muscular. Passaram para T invertido, que é o arranjo que todo mundo já conhece:
+
+```
+        ANTES                              DEPOIS
+ H    J    K    L    ;             H      J     K    L      ;
+ ←    ↓    ↑    →   BSPC          Home  PgDn    ↑   PgUp   BSPC
+
+ N    M    ,    .    /             N      M     ,    .      /
+Home PgDn PgUp End  DEL           End     ←     ↓    →     DEL
+```
+
+O `↑` ficou exatamente acima do `↓`. Home / End / PgUp / PgDn assumiram as posições liberadas na linha de cima.
+
+**Custo:** três das quatro setas desceram da home row, então navegar muito exige mover a mão. Em troca, acerta-se
+de primeira. E as teclas de navegação, menos usadas, passaram a ocupar a linha mais confortável — o inverso do
+ideal, mas consequência inevitável de descer as setas.
+
+**Layer Mac.** A tecla à direita do `B` era `Cmd+espaço` (Spotlight) e virou `&none`. O atalho continua
+disponível segurando `F` (é `LGUI` no hold) + o espaço do polegar.
+
+## 2026-09-25 — Deep sleep de 5 para 30 minutos
+
+`CONFIG_ZMK_IDLE_SLEEP_TIMEOUT` `300000` → `1800000` nos dois `.conf`. Com o wake finalmente funcionando
+(ver abaixo), os 5 minutos deixaram de ser proteção e viraram só incômodo — o teclado dormia no intervalo de
+um café. 30 min é o mesmo valor que o shield `roBakesb` usa lá no upstream.
+
+## 2026-09-24 — Correção do deep sleep: QSPI desabilitado
+
+**O sintoma.** Passados os 5 minutos de inatividade, o teclado morria: nenhuma tecla de nenhuma das metades o
+trazia de volta, o Mac mostrava o teclado pareado mas não conectado, e a única saída era cortar a energia na
+chave física (ou plugar o USB). Bateria em 47%, então não era brownout.
+
+**A causa.** O overlay de board do próprio ZMK (`app/boards/seeeduino_xiao_ble.overlay`) habilita `&qspi` com a
+flash externa `p25q16h` em todo build. Nada na configuração usa esse chip — a placa define
+`chosen { zephyr,flash = &flash0; }` e as settings vivem na flash interna via NVS — mas ele é registrado como
+device de PM.
+
+Ao entrar em deep sleep, `app/src/activity.c` chama `zmk_pm_suspend_devices()` e **aborta se qualquer device
+falhar o suspend**:
+
+```c
+set_state(ZMK_ACTIVITY_SLEEP);            // BLE ja derrubado
+if (zmk_pm_suspend_devices() < 0) {
+    zmk_pm_resume_devices();
+    return;                                // nunca chega no sys_poweroff()
+}
+sys_poweroff();
+```
+
+O `qspi_nor_pm_action()` do Zephyr retorna `-EBUSY` em três situações e, com `CONFIG_PM_DEVICE_RUNTIME`
+desligado, ainda chama `qspi_device_init()` no caminho de SUSPEND e propaga o erro dele. Resultado: o teclado
+anunciava o sleep, derrubava o Bluetooth e **nunca desligava** — ficava preso, tentando de novo a cada segundo.
+
+**A correção.** `&qspi { status = "disabled"; }` no `roBa.dtsi`, que as duas metades incluem. Confirmado na
+prática: depois de 7 minutos parado, uma tecla da direita traz o teclado de volta.
+
+**Alternativa não usada:** `CONFIG_PM_DEVICE_RUNTIME=y` resolveria o mesmo ponto (e faria o
+`zmk_pm_suspend_devices()` pular tanto o QSPI quanto o kscan), mas mexe no PM de todos os devices. Fica como
+plano B se algo relacionado reaparecer.
+
+## 2026-09-23 — Documentação e explorador do keymap
+
+`docs/` com o explorador interativo (GitHub Pages), o guia de migração e o histórico do firmware ESB.
+Tudo vive só nesta branch, então não conflita com o upstream.
+
+## 2026-09-23 — Limpeza do keymap: 12 → 7 layers
+
+Removidas as layers `Win`, `Gaming`, `Gaming Num`, `Tiling` e `TWin`, que não são usadas neste setup.
+Layers finais: `Mac 0`, `Number 1`, `Symbol 2`, `Super 3`, `Mouse 4`, `Scroll 5`, `Snipe 6`.
+
+Junto:
+
+- Removidos os gatilhos acidentais da layer Mouse: o `MO_TOG` abaixo do `/` (alcançável de qualquer layer por
+  transparência) e o combo `,` + `.` + `/` + tecla abaixo do `Z`. A Mouse passou a ter uma entrada só: segurar P1.
+- `roBa.dtsi`: os *input processors* do trackball apontavam para as layers 10 e 11. Com a renumeração,
+  `scroll { layers = <5>; }` e `snipe { layers = <6>; }`. **Se renumerar as layers de novo, esse arquivo tem que
+  acompanhar** — senão scroll e snipe param de funcionar sem nenhum erro de compilação.
+- Layer Super: perfis Bluetooth reduzidos de 5 para 3 (`Z`, `X`, `C`), `BT_CLR` no `.`, e a tecla `TO Mac`
+  removida por ser redundante.
+
+## 2026-09-22 — Migração do dongle ESB para Bluetooth
+
+Metade direita passou a ser a central BLE; o dongle saiu de cena. O `build.yaml` compila
+`roBa_R` (central, com o snippet `studio-rpc-usb-uart` para o ZMK Studio), `roBa_L_enc_inv` (periférica) e
+`settings_reset`.
+
+Motivo: com ESB, o transmissor desiste depois de N retransmissões e o pacote se perde. O BLE retransmite até
+receber ACK. As falhas intermitentes de tecla acabaram.
+
+---
+
+## Notas que valem para qualquer mudança futura
+
+- **Grave sempre as duas metades** quando mexer em `roBa.dtsi` ou nos `.conf` — o `.dtsi` é compartilhado.
+- **Mudança só de keymap: basta gravar a metade direita** (a central). Pela [doc do ZMK](https://zmk.dev/docs/features/split-keyboards), *"for keymap changes it will typically be enough to flash the controller of the central half"*.
+- **Não grave o `settings_reset.uf2`** por engano: ele apaga os pareamentos Bluetooth.
+- **Guarde o `firmware.zip`** de cada versão que funcionar. Os artifacts do GitHub Actions expiram (90 dias por
+  padrão), e é o caminho de volta mais rápido quando algo dá errado.
+- **Com USB plugado o teclado não entra em deep sleep** (`!is_usb_power_present()` em `activity.c`) — então não
+  dá para investigar problemas de sleep com log por USB.

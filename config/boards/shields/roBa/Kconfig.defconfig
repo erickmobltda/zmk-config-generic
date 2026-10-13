@@ -9,6 +9,17 @@ config ZMK_SPLIT
 config ZMK_SPLIT_ROLE_CENTRAL
     default y
 
+# Kept from bt-zmk-0.3 so the profile count (BT_MAX_PAIRED - CENTRAL_PERIPHERALS
+# = 5) and the bond storage stay the same as on the previous base.
+config ZMK_SPLIT_BLE_CENTRAL_PERIPHERALS
+    default 2
+
+config BT_MAX_CONN
+    default 7
+
+config BT_MAX_PAIRED
+    default 7
+
 endif
 
 if SHIELD_ROBA_L
