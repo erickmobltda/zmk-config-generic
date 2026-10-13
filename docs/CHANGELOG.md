@@ -8,6 +8,34 @@ Toda mudança aqui exige **regravar as duas metades**, salvo onde indicado.
 
 ---
 
+## 2026-10-13 — P3 volta a space/shift; atalhos de Cmd na layer Number
+
+O Cmd no polegar (P3 `space/cmd`, desde 04/10) não pegou na prática. O P3 voltou a ser `&hm LSHFT SPACE`, o que
+devolve o Shift+Enter natural (segura P3, toca P4). Por isso o Shift+Enter que tinha ido para o P4 da Number
+(12/10) foi removido — voltou a `&trans`.
+
+O Cmd com uma mão agora vem da layer Number: segura **P2** e toca a letra.
+
+| Tecla na Number | antes | agora |
+|---|---|---|
+| `A` | Alt (Option) | **Cmd+A** |
+| `Z` | Snipe | **Cmd+Z** |
+| `X` | Scroll | **Cmd+X** |
+| `C` | clique direito | **Cmd+C** |
+| `V` | clique esquerdo | **Cmd+V** |
+| `B` | clique do meio | **Cmd+F** |
+
+**O que mudou de lugar:**
+
+- **Cliques, Scroll e Snipe** saem da Number e ficam só na layer **Mouse (P1)**, nas mesmas letras (`C`
+  direito, `V` esquerdo, `B` meio, `X` Scroll, `Z` Snipe). Diferença: na Mouse o `X` é `MO_TOG` — um toque
+  rápido **trava** o scroll ligado.
+- **O Option some da Number.** Era o que permitia Option + ←/→ (pular palavra) e Option + Backspace (apagar
+  palavra) com a Number ativa. Aceito: não é um uso do dia a dia. O Option continua no `D` da Mac (segurando).
+
+O Cmd com uma mão fica restrito a esses seis atalhos; os demais (Cmd+T, W, S, Tab…) voltam a depender do `F`
+da Mac (segurando) ou das duas mãos.
+
 ## 2026-10-12 — Shift+Enter no P4 da layer Number
 
 A troca do P3 para `space/cmd` (04/10) tirou o Shift+Enter: ele era feito segurando o P3 (Shift) e tocando o

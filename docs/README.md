@@ -44,8 +44,8 @@ Duplo clique no reset da metade → aparece um drive USB → copiar o `.uf2` par
 | 2 | Symbol | Segurar **P5** (polegar externo direito) |
 | 3 | Super | **P2 + P5** juntos (conditional layer) |
 | 4 | Mouse | Segurar **P1** (polegar externo esquerdo) |
-| 5 | Scroll | Number + **X**, ou pela Mouse. Faz a trackball rolar a tela |
-| 6 | Snipe | Number + **Z**, ou pela Mouse. Cursor 3× mais lento |
+| 5 | Scroll | Mouse (P1) + **X** ou **.** — toque rápido trava. Faz a trackball rolar a tela |
+| 6 | Snipe | Mouse (P1) + **Z** ou **;**. Cursor 3× mais lento |
 
 Scroll e Snipe não têm teclas: são as layers que os *input processors* do trackball observam, definidas em `config/boards/shields/roBa/roBa.dtsi`. Se renumerar as layers, **é preciso atualizar os `layers = <5>` e `<6>` nesse arquivo**.
 
