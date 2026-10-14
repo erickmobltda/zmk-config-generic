@@ -1,4 +1,4 @@
-#define ZMK_POINTING_DEFAULT_SCRL_VAL 100
+#define ZMK_POINTING_DEFAULT_SCRL_VAL 200
 
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
@@ -9,50 +9,16 @@
 #include <dt-bindings/zmk/pointing.h>
 #include <behaviors/mouse_keys.dtsi>
 
-#define MO_TOG(layer) &mo_tog layer layer
+#define MO_TOG(layer) &mo_tog layer layer   // Macro to apply momentary-layer-on-hold/toggle-layer-on-tap to a specific layer
+
 
 #define DEFAU 0
-#define WINDO 1
-#define GAMIN 2
-#define NUMBE 3
-#define SYMBO 4
-#define LOGAM 5
-#define SUPER 6
-#define MOUSE 7
-#define TILIN 8
-#define TILWI 9
-#define SCROL 10
-#define SNIPE 11
-#define GAMFN 12
-#define FSCRL 13
-#define HSCRL 14
-
-#define KEY_AFTER_B &kp LA(SPACE)
-
-/* Lariska mouse button bindings appended to every layer (positions 43-47):
- * LCLK RCLK MCLK MB4 MB5.
- * MB4 is a tap-dance: tap = normal MB4 click, hold = momentary fast-scroll
- * layer (FSCRL), double-tap = OS overview (mission control on mac / task view
- * on win). MB5 is a hold-tap: tap = normal MB5 click, hold = momentary tiling
- * layer (alt-tab on the scroll wheel) -- instant, no tap-dance delay.
- * Holding MB4 + MB5 together activates the horizontal-scroll layer (HSCRL):
- * the second button is &trans on the first button's layer, so it falls through
- * to its base hold; with both holds down, conditional_layers turns on HSCRL. */
-#define LARISKA_BTNS       &bd LCLK &bd RCLK &bd MCLK &bd MB4 &bd MB5
-#define LARISKA_BTNS_MAC   &bd LCLK &bd RCLK &bd MCLK &td_mb4_mac &mo_mkp TILIN MB5
-#define LARISKA_BTNS_WIN   &bd LCLK &bd RCLK &bd MCLK &td_mb4_win &mo_mkp TILWI MB5
-/* Inside the held tiling layers MB4 is &trans so a second MB4 press falls
- * through to the base MB4 hold (mo_mkp FSCRL via the tap-dance); FSCRL + the
- * tiling layer then trigger HSCRL through conditional_layers.
- * (OS overview now lives on the MB4 double-tap.) */
-#define LARISKA_BTNS_TILIN &bd LCLK &bd RCLK &bd MCLK &trans &bd MB5
-#define LARISKA_BTNS_TILWI &bd LCLK &bd RCLK &bd MCLK &trans &bd MB5
-/* MB4-hold fast-scroll layer (FSCRL): clicks stay normal, MB4 held. MB5 is
- * &trans so it falls through to the base MB5 hold (tiling); FSCRL + tiling
- * then trigger HSCRL. */
-#define LARISKA_BTNS_HSC   &bd LCLK &bd RCLK &bd MCLK &trans &trans
-/* MB4 + MB5 held: both fall through (&trans) so the holds persist. */
-#define LARISKA_BTNS_HSCRL &bd LCLK &bd RCLK &bd MCLK &trans &trans
+#define NUMBE 1
+#define SYMBO 2
+#define SUPER 3
+#define MOUSE 4
+#define SCROL 5
+#define SNIPE 6
 
 / {
     cursor_move: cursor_move {
@@ -63,63 +29,17 @@
         time-to-max-speed-ms = <0>;
         acceleration-exponent = <0>;
     };
-    /* Keyboard rotary encoder scroll: one discrete REL_WHEEL tick per detent
-     * via stepped_scroll (same as the mouse wheel) instead of accelerated &msc,
-     * so it feels predictable. cw = up, matching the old &msc SCRL_UP. */
     mouse_wheel: mouse_wheel {
-        compatible = "zmk,behavior-sensor-rotate";
-        label = "MOUSE_WHEEL";
-        #sensor-binding-cells = <0>;
-        bindings = <&stepped_scroll 1>, <&stepped_scroll (-1)>;
-    };
-    /* One discrete REL_WHEEL tick per encoder detent via zmk-behavior-stepped-scroll.
-     * stepped_scroll is defined in the dongle overlay; stepped_scroll_il routes
-     * its events to HID. This replaces the old lariska_ec_s input-two-axis approach. */
-    lariska_scroll: lariska_scroll {
-        compatible = "zmk,behavior-sensor-rotate";
-        #sensor-binding-cells = <0>;
-        bindings = <&stepped_scroll (-1)>, <&stepped_scroll 1>;
-    };
-    /* Horizontal mouse-wheel scroll for the MB4-hold layers. */
-    lariska_hscroll: lariska_hscroll {
-        compatible = "zmk,behavior-sensor-rotate";
-        #sensor-binding-cells = <0>;
-        bindings = <&stepped_hscroll (-1)>, <&stepped_hscroll 1>;
-    };
-    /* Fast vertical scroll (4x) for the MB4-hold layer: 4 REL_WHEEL ticks
-     * per detent, same direction as lariska_scroll. */
-    lariska_scroll_4x: lariska_scroll_4x {
-        compatible = "zmk,behavior-sensor-rotate";
-        #sensor-binding-cells = <0>;
-        bindings = <&stepped_scroll (-4)>, <&stepped_scroll 4>;
-    };
-    alt_tab_encoder: alt_tab_encoder {
-        compatible = "zmk,behavior-sensor-rotate";
-        label = "ALT_TAB_ENC";
-        #sensor-binding-cells = <0>;
-        tap-ms = <5>;
-        bindings = <&swap_enc_rev>, <&swap_enc>;
-    };
-    /* Inverted alt-tab for the left keyboard encoder (TILWI slot 0 only). */
-    alt_tab_encoder_inv: alt_tab_encoder_inv {
-        compatible = "zmk,behavior-sensor-rotate";
-        label = "ALT_TAB_ENC_INV";
-        #sensor-binding-cells = <0>;
-        tap-ms = <5>;
-        bindings = <&swap_enc>, <&swap_enc_rev>;
-    };
-    /* Mouse-wheel space navigation for the Mac tiling layer. */
-    lariska_ws: lariska_ws {
-        compatible = "zmk,behavior-sensor-rotate";
-        label = "LARISKA_WS";
-        #sensor-binding-cells = <0>;
-        tap-ms = <5>;
-        bindings = <&kp LC(RIGHT)>, <&kp LC(LEFT)>;
+            compatible = "zmk,behavior-sensor-rotate";
+            label = "MOUSE_WHEEL";
+            #sensor-binding-cells = <0>;
+            tap-ms = <20>;
+            bindings = <&msc SCRL_UP>, <&msc SCRL_DOWN>;
     };
     rot_kp: sensor_rotate_kp {
-        compatible = "zmk,behavior-sensor-rotate-var";
-        #sensor-binding-cells = <2>;
-        bindings = <&kp>, <&kp>;
+            compatible = "zmk,behavior-sensor-rotate-var";
+            #sensor-binding-cells = <2>;
+            bindings = <&kp>, <&kp>;
     };
     conditional_layers {
         compatible = "zmk,conditional-layers";
@@ -128,127 +48,19 @@
             if-layers = <NUMBE SYMBO>;
             then-layer = <SUPER>;
         };
-
-        tri_layer_gaming {
-            if-layers = <SYMBO LOGAM>;
-            then-layer = <SUPER>;
-        };
-
-        /* MB4 (FSCRL) + MB5 (tiling) held together -> horizontal scroll. */
-        hscroll_mac {
-            if-layers = <FSCRL TILIN>;
-            then-layer = <HSCRL>;
-        };
-
-        hscroll_win {
-            if-layers = <FSCRL TILWI>;
-            then-layer = <HSCRL>;
-        };
     };
 
     behaviors {
-        sk_forever: sk_forever {
-            compatible = "zmk,behavior-sticky-key";
-            #binding-cells = <1>;
-            bindings = <&kp>;
-            ignore-modifiers;
-            release-after-ms = <600000>;
-        };
-
-        /* Home-row mods, flow-tap guarded.
-         *
-         * tap-preferred already means a mod can only misfire by *lingering*:
-         * the hold resolves when tapping-term-ms expires with the key still
-         * down, so a thumb or finger that stays put through a thinking pause
-         * turns the next keystroke into a chord (the random stray mod).
-         *
-         * require-prior-idle-ms closes that hole: if the key goes down less
-         * than N ms after the previous non-modifier keycode *press*, the
-         * hold-tap resolves to tap immediately and can never become a mod,
-         * no matter how long it is held. Mid-word rolls are therefore
-         * misfire-proof, while a deliberate chord -- which always follows a
-         * reach, i.e. a pause longer than N -- is untouched.
-         *
-         * Chording two home-row mods still works: a resolved *hold* emits a
-         * modifier, and modifier presses do not refresh the idle timestamp
-         * (behavior_hold_tap.c skips is_mod() keycodes), so Ctrl+Alt+key
-         * composes normally.
-         *
-         * Cost: a chord started within N ms of typing types the letter
-         * instead (e.g. text, then an instant Cmd+S -> a literal "s"). At
-         * 100 wpm a keystroke is roughly 120 ms, so 100 ms sits just inside
-         * one keystroke -- it still covers the lingering case, which is a
-         * key pressed in the flow of typing, while leaving deliberate chords
-         * a short reach away. Raise toward 150 if stray mods come back.
-         */
         hm: homerow_mods {
             compatible = "zmk,behavior-hold-tap";
             label = "HOMEROW_MODS";
             #binding-cells = <2>;
             tapping-term-ms = <200>;
             quick-tap-ms = <0>;
-            require-prior-idle-ms = <100>;
             flavor = "tap-preferred";
             bindings = <&kp>, <&kp>;
         };
 
-        /* Same flow-tap guard for the two home-row layer-taps (A and SEMI,
-         * both holding the tiling layer). Stock &lt is tap-preferred/200 ms
-         * with no idle guard, so a lingering A used to arm the tiling layer
-         * and turn the next keystroke into a window command -- louder than a
-         * stray mod. Defined locally rather than patching &lt so the global
-         * layer-tap keeps its stock behaviour elsewhere.
-         */
-        lm: homerow_layer {
-            compatible = "zmk,behavior-hold-tap";
-            label = "HOMEROW_LAYER";
-            #binding-cells = <2>;
-            tapping-term-ms = <200>;
-            quick-tap-ms = <0>;
-            require-prior-idle-ms = <100>;
-            flavor = "tap-preferred";
-            bindings = <&mo>, <&kp>;
-        };
-
-        /* Left-thumb space/shift. Separate node from hm because Shift is the
-         * one mod that is genuinely needed mid-flow: a capital at the start
-         * of a word is space-tap immediately followed by space-as-shift, so
-         * too wide a window turns intended capitals into double spaces.
-         *
-         * The window is measured press-to-press (store_last_hold_tapped
-         * records the press timestamp, not the release), so 100 ms blocks
-         * only a shift that lands on the heels of the preceding key -- the
-         * lingering-thumb case -- and leaves a normal space-then-capital
-         * (~120-150 ms apart at speed) working.
-         *
-         * This now carries the same 100 ms as hm, but the node stays split:
-         * the two numbers agree by coincidence, not for the same reason. hm
-         * is bounded by how soon a deliberate chord follows typing, hsp by
-         * how soon an intended capital follows a space -- a much tighter
-         * budget, and the one that will want to move first.
-         *
-         * Tuning: random capitals still slipping through -> raise toward
-         * 150. Double spaces where a capital was meant -> lower, or drop the
-         * property to go back to the old behaviour.
-         */
-        hsp: homerow_space {
-            compatible = "zmk,behavior-hold-tap";
-            label = "HOMEROW_SPACE";
-            #binding-cells = <2>;
-            tapping-term-ms = <200>;
-            quick-tap-ms = <0>;
-            require-prior-idle-ms = <100>;
-            flavor = "tap-preferred";
-            bindings = <&kp>, <&kp>;
-        };
-
-        /* Right-thumb enter/shift. Deliberately keeps hold-preferred and no
-         * require-prior-idle-ms: this shift is used for chords that start
-         * from a held thumb (shift+click, shift+arrow, shift+enter) and must
-         * engage instantly, including straight out of a typing burst. The
-         * short 150 ms term plus hold-preferred is the behaviour that works
-         * here -- do not fold it into hm.
-         */
         hk: homerow_hold {
             compatible = "zmk,behavior-hold-tap";
             label = "HOLD_MOD";
@@ -275,135 +87,20 @@
             tapping-term-ms = <200>;
             bindings = <&mo>, <&tog>;
         };
-        /* Locking momentary layer: press activates+locks, release forcibly
-         * deactivates+unlocks. Used by dmouse to clear a layer that &tog left
-         * LOCKED (ZMK 0.4+ &tog sets the lock bit, and a plain &mo release is a
-         * non-forcing disable that refuses to turn a locked layer off). A
-         * press/release pair always ends with the layer OFF, regardless of its
-         * prior state, without disturbing the base layer. */
-        mo_l: behavior_mo_locking {
-            compatible = "zmk,behavior-momentary-layer";
-            #binding-cells = <1>;
-            display-name = "MO Locking";
-            locking;
-        };
-        /* Drain-aware HID button click (damex zmk-behavior-button-direct).
-         * Drop-in for &mkp; force-drains the HID press count on release so a
-         * click whose release is lost over ESB self-heals on the next press
-         * instead of sticking until power-cycle. */
-        bd: behavior_button_direct {
-            compatible = "zmk,behavior-button-direct";
-            #binding-cells = <1>;
-        };
-
-        /* Latching auto-clicker (roba,behavior-autoclick, src/behavior_autoclick.c).
-         * One press starts ~25 clicks/sec hands-free; pressing it again, or any
-         * other key, stops it. press-ms + interval-ms set the rate. */
-        autoclk: behavior_autoclick {
-            compatible = "roba,behavior-autoclick";
-            #binding-cells = <1>;
-            press-ms = <20>;
-            interval-ms = <20>;
-        };
-
-        /* Hold = momentary layer, tap = mouse-button click (for MB5). */
-        mo_mkp: behavior_mo_mkp {
-            compatible = "zmk,behavior-hold-tap";
-            label = "MO_MKP";
-            #binding-cells = <2>;
-            flavor = "hold-preferred";
-            tapping-term-ms = <150>;
-            quick-tap-ms = <0>;
-            bindings = <&mo>, <&bd>;
-        };
-        td_alt: tap_dance_0 {
-            compatible = "zmk,behavior-tap-dance";
-            #binding-cells = <0>;
-            tapping-term-ms = <200>;
-            bindings = <&kp LALT>, <&to WINDO>;
-        };
-
-        td_mo: tap_dance_1 {
-            compatible = "zmk,behavior-tap-dance";
-            #binding-cells = <0>;
-            tapping-term-ms = <200>;
-            bindings = <MO_TOG(MOUSE)>, <&to GAMIN>;
-        };
-
-        /* Lariska MB4 tap-dance: tap = MB4 click, hold = momentary fast-scroll
-         * layer (FSCRL), double-tap = OS overview (mission control / task view).
-         * Binding 0 is the existing hold-tap, so it still resolves tap-vs-hold;
-         * binding 1 fires only on the second tap. The tap-dance delay lands on
-         * the scroll layer (not on MB5's alt-tab, which is now instant). */
-        td_mb4_mac: td_mb4_mac {
-            compatible = "zmk,behavior-tap-dance";
-            #binding-cells = <0>;
-            tapping-term-ms = <200>;
-            bindings = <&mo_mkp FSCRL MB4>, <&kp LC(UP)>;
-        };
-        td_mb4_win: td_mb4_win {
-            compatible = "zmk,behavior-tap-dance";
-            #binding-cells = <0>;
-            tapping-term-ms = <200>;
-            bindings = <&mo_mkp FSCRL MB4>, <&kp LG(TAB)>;
-        };
         swap: swapper {
             compatible = "zmk,behavior-tri-state";
             label = "SWAPPER";
             #binding-cells = <0>;
-            bindings = <&kp LALT>, <&kp TAB>, <&kp LALT>;
-            hold-start;
-            /* 23 = swap_rev; 43-45 = Lariska LCLK/RCLK/MCLK so a click doesn't
-             * end the alt-tab hold. */
-            ignored-key-positions = <23 43 44 45>;
-        };
-        /* Reverse alt-tab on the X-position key (pos 23). hold-start makes both
-         * swap and swap_rev hold a ref-counted LALT, so either can start the
-         * alt-tab from cold and they compose while cycling. */
-        swap_rev: swap_rev {
-            compatible = "zmk,behavior-tri-state";
-            label = "SWAPPER_REV";
-            #binding-cells = <0>;
-            bindings = <&kp LALT>, <&kp LS(TAB)>, <&kp LALT>;
-            hold-start;
-            ignored-key-positions = <11 43 44 45>;
+            bindings = <&kt LALT>, <&kp TAB>, <&kt LALT>;
+            ignored-key-positions = <23>;
         };
 
         swapmac: swappermac {
             compatible = "zmk,behavior-tri-state";
             label = "SWAPPERMAC";
             #binding-cells = <0>;
-            bindings = <&kp LGUI>, <&kp TAB>, <&kp LGUI>;
-            hold-start;
-            ignored-key-positions = <22 43 44 45>;
-        };
-        /* Reverse cmd-tab on the Z-position key (pos 22); mirrors swap_rev. */
-        swapmac_rev: swapmac_rev {
-            compatible = "zmk,behavior-tri-state";
-            label = "SWAPPERMAC_REV";
-            #binding-cells = <0>;
-            bindings = <&kp LGUI>, <&kp LS(TAB)>, <&kp LGUI>;
-            hold-start;
-            ignored-key-positions = <24 43 44 45>;
-        };
-        /* ignored-key-positions 43-45 = Lariska LCLK/RCLK/MCLK, so clicking
-         * mid-cycle doesn't interrupt the encoder-driven alt-tab hold. */
-        swap_enc: swap_enc {
-            compatible = "zmk,behavior-tri-state";
-            label = "SWAPPER_ENC";
-            #binding-cells = <0>;
-            bindings = <&kt LALT>, <&kp TAB>, <&kt LALT>;
-            ignored-key-positions = <43 44 45>;
-        };
-        /* Reverse-direction swapper. Shares the alt-hold with swap_enc via the
-         * sensor's virtual key position (tri-state state is keyed by position),
-         * so alt-tab engages no matter which way the wheel is turned first. */
-        swap_enc_rev: swap_enc_rev {
-            compatible = "zmk,behavior-tri-state";
-            label = "SWAPPER_ENC_REV";
-            #binding-cells = <0>;
-            bindings = <&kt LALT>, <&kp LS(TAB)>, <&kt LALT>;
-            ignored-key-positions = <43 44 45>;
+            bindings = <&kt LGUI>, <&kp TAB>, <&kt LGUI>;
+            ignored-key-positions = <22>;
         };
         w1: w1 {
             compatible = "zmk,behavior-tri-state";
@@ -470,50 +167,6 @@
     };
 
     macros {
-        bt_macro_0: bt_macro_0 {
-            label = "bt_macro_0";
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            wait-ms = <0>;
-            tap-ms = <0>;
-            bindings = <&to DEFAU>, <&bt BT_SEL 0>;
-        };
-
-        bt_macro_1: bt_macro_1 {
-            label = "bt_macro_1";
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            wait-ms = <0>;
-            tap-ms = <0>;
-            bindings = <&to DEFAU>, <&bt BT_SEL 1>;
-        };
-
-        bt_macro_2: bt_macro_2 {
-            label = "bt_macro_2";
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            wait-ms = <0>;
-            tap-ms = <0>;
-            bindings = <&to DEFAU>, <&bt BT_SEL 2>;
-        };
-
-        bt_macro_3: bt_macro_3 {
-            label = "bt_macro_3";
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            wait-ms = <0>;
-            tap-ms = <0>;
-            bindings = <&to WINDO>, <&bt BT_SEL 3>;
-        };
-
-        bt_macro_4: bt_macro_4 {
-            label = "bt_macro_4";
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            wait-ms = <0>;
-            tap-ms = <0>;
-            bindings = <&to WINDO>, <&bt BT_SEL 4>;
-        };
 
         dmouse: dmouse {
             label = "deactivate_mouse";
@@ -521,65 +174,9 @@
             #binding-cells = <0>;
             wait-ms = <0>;
             tap-ms = <0>;
-            bindings = <&mo_l MOUSE>, <&mo_l SCROL>, <&mo_l SNIPE>;
+            bindings = <&mo MOUSE>, <&mo SCROL>,  <&mo SNIPE>;
         };
-        deskhop1: deskhop1 {
-            label = "deskhop1";
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            wait-ms = <0>;
-            tap-ms = <0>;
-            bindings = <&kp RC(RA(N1))>;
-        };
-        deskhop2: deskhop2 {
-            label = "deskho2";
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            wait-ms = <0>;
-            tap-ms = <0>;
-            bindings = <&kp RC(RA(N2))>;
-        };
-        deskhop_gaming: deskhop_gaming {
-            label = "deskhop_gaming";
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            wait-ms = <0>;
-            tap-ms = <0>;
-            bindings = <&kp LC(RS(Y))>;
-        };
-        deskhop_normal: deskhop_normal {
-            label = "deskhop_normal";
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            wait-ms = <0>;
-            tap-ms = <0>;
-            bindings = <&kp LC(RS(N))>;
-        };
-        flush_mods: flush_mods {
-            label = "flush_mods";
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            wait-ms = <0>;
-            tap-ms = <0>;
-            bindings
-                = <&kp LCTRL>, <&kp LSHFT>, <&kp LALT>, <&kp LGUI>
-                , <&kp RCTRL>, <&kp RSHFT>, <&kp RALT>, <&kp RGUI>;
-        };
-    };
 
-    combos {
-        compatible = "zmk,combos";
-        combo_esc {
-            timeout-ms = <50>;
-            key-positions = <31 32 33 34>;
-            bindings = <&tog MOUSE>;
-        };
-        /* No X+C+V gaming combo here. It was reachable from letter keys on
-         * two layers with nothing but a 50 ms window guarding it, and the
-         * layer it was least safe on was the one it was meant to serve --
-         * positions 23/24/25 are X+C+V on WINDO but Z+X+C on GAMIN, because
-         * the gaming row starts one key earlier with LSHFT at 22. &tog GAMIN
-         * has dedicated keys on both layers, so the combo bought nothing. */
     };
 
     keymap {
@@ -587,197 +184,78 @@
 
         default_layer {
             label = "Mac";
-            display-name = "Mac";
             bindings = <
- &kp Q                &kp W                &kp E                &kp R                &kp T                &kp Y                &kp U                &kp I                &kp O                &kp P
- &lm TILIN A          &hm LCTRL S          &hm LALT D           &hm LGUI F           &kp G                &kp LG(LS(N4))       &deskhop_gaming      &kp H                &hm LGUI J           &hm RALT K           &hm RCTRL L          &lm TILIN SEMI
- &kp Z                &kp X                &kp C                &kp V                &kp B                KEY_AFTER_B          &deskhop_normal      &kp N                &kp M                &kp COMMA            &kp DOT              &kp FSLH
- &flush_mods          &trans               &kp LC(UP)           &mo MOUSE            &mo NUMBE            &hsp LSHFT SPACE     &hk RSHFT RET        &mo SYMBO            &kp LC(CAPS)
- LARISKA_BTNS_MAC
+ &kp Q                &kp W                &kp E                &kp R                &kp T                &kp Y                &kp U                &kp I                &kp O                &kp P               
+ &kp A                &hm LCTRL S          &hm LALT D           &hm LGUI F           &kp G                &kp LG(LC(LS(N4)))   &none                &kp H                &hm LGUI J           &hm RALT K           &hm RCTRL L          &kp FSLH             
+ &kp Z                &kp X                &kp C                &kp V                &kp B                &kp TAB                &none                &kp N                &kp M                &kp COMMA            &kp DOT              &kp SEMI             
+ &none                &trans               &none                &mo MOUSE            &mo NUMBE            &hm LSHFT SPACE      &hk RSHFT RET        &mo SYMBO            &none 
             >;
-            sensor-bindings = <&mouse_wheel &lariska_scroll>;
+
+            sensor-bindings = <&mouse_wheel>;
         };
 
-        windows {
-            label = "Windows";
-            display-name = "Windows";
+lower_layer {
+            label = "Number";
             bindings = <
- &kp Q                &kp W                &kp E                &kp R                &kp T                &kp Y                &kp U                &kp I                &kp O                &kp P
- &lm TILWI A          &hm LCTRL S          &hm LALT D           &hm LGUI F           &kp G                &kp PSCRN            &deskhop_gaming      &kp H                &hm LGUI J           &hm RALT K           &hm RCTRL L          &lm TILWI SEMI
- &kp Z                &kp X                &kp C                &kp V                &kp B                &tog GAMIN           &deskhop_normal      &kp N                &kp M                &kp COMMA            &kp DOT              &kp FSLH
- &flush_mods          &trans               &kp LG(DOT)          &mo MOUSE        &mo NUMBE            &hsp LSHFT SPACE     &hk RSHFT RET        &mo SYMBO                &kp LC(CAPS)
- LARISKA_BTNS_WIN
+ &kp N1               &kp N2               &kp N3               &kp N4               &kp N5               &kp N6               &kp N7               &kp N8               &kp N9               &kp N0               
+ &kp LG(A)            &kp RCTRL            &kp TAB              &kp ESC              &kp LC(B)            &trans               &trans               &kp LEFT             &kp DOWN             &kp UP               &kp RIGHT            &kp BSPC 
+ &kp LG(Z)            &kp LG(X)            &kp LG(C)            &kp LG(V)            &kp LG(F)            &trans               &trans               &kp HOME             &kp PG_DN            &kp PG_UP            &kp END              &kp DEL 
+ &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans 
             >;
-            sensor-bindings = <&mouse_wheel &lariska_scroll>;
+
+            sensor-bindings = <&rot_kp C_VOL_UP C_VOL_DN>;
         };
 
-        gaming_layer {
-            label = "Gaming";
-            display-name = "Gaming";
+raise_layer {
+            label = "Symbol";
             bindings = <
- &kp TAB              &kp Q                &kp W                &kp E                &kp R                &kp Y                &kp U                &kp I                &kp O                &kp P
- &kp LCTRL            &kp A                &kp S                &kp D                &kp F                &kp PSCRN            &trans               &kp H                &hm LGUI J           &hm RALT K           &kp L                &lm TILIN SEMI
- &kp LSHFT            &kp Z                &kp X                &kp C                &kp V                &none                &trans               &kp N                &kp M                &kp COMMA            &kp DOT              &kp FSLH
- &flush_mods          &tog GAMIN           &kp J                &kp R                &mo LOGAM            &kp SPACE            &to WINDO            &mo SYMBO            &kp LC(CAPS)
- LARISKA_BTNS
+ &kp EXCL              &kp AT                &kp HASH             &kp DLLR             &kp PRCNT            &kp CARET            &kp AMPS             &kp KP_MULTIPLY     &kp PIPE            &kp BSLH             
+ &kp LBRC             &kp RBRC             &kp PLUS             &kp EQUAL            &kp MINUS            &trans               &trans               &kp UNDER            &kp LPAR            &kp RPAR            &kp DQT             &kp QMARK           
+ &kp GRAVE            &kp TILDE            &kp LBKT             &kp RBKT            &trans               &trans               &trans               &trans              &kp SQT             &kp LT              &kp GT             &kp COLON           
+ &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               
             >;
-            sensor-bindings = <&rot_kp PG_UP PG_DN &lariska_scroll>;
-        };
-
-        lower_layer {
-            label = "Numbers";
-            display-name = "Numbers";
-            bindings = <
- &kp N1               &kp N2               &kp N3               &kp N4               &kp N5               &kp N6               &kp N7               &kp N8               &kp N9               &kp N0
- &kp LALT             &kp RCTRL            &kp TAB              &kp ESC              &kp LC(B)            &trans               &trans               &kp LEFT             &kp DOWN             &kp UP               &kp RIGHT            &kp BSPC
- &mo SNIPE            &mo SCROL            &bd MB2             &bd MB1             &bd MB3             &mo GAMIN            &trans               &kp HOME             &kp PG_DN            &kp PG_UP            &kp END              &kp DEL
- &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans
- LARISKA_BTNS
-            >;
-            sensor-bindings = <&rot_kp C_VOL_UP C_VOL_DN &lariska_scroll>;
-        };
-
-        raise_layer {
-            label = "Symbols";
-            display-name = "Symbols";
-            bindings = <
- &kp EXCL             &kp AT               &kp HASH             &kp DLLR             &kp PRCNT            &kp CARET            &kp AMPS             &kp KP_MULTIPLY      &kp PIPE             &kp BSLH
- &kp LBRC             &kp RBRC             &kp PLUS             &kp EQUAL            &kp MINUS            &trans               &trans               &kp UNDER            &kp LPAR             &kp RPAR             &kp DQT              &kp COLON
- &kp GRAVE            &kp TILDE            &kp LBKT             &kp RBKT             &trans               &trans               &trans               &trans               &kp SQT              &kp LT               &kp GT               &kp QMARK
- &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans
- LARISKA_BTNS
-            >;
-            sensor-bindings = <&rot_kp C_VOL_UP C_VOL_DN &lariska_scroll>;
-        };
-
-        gaming_lower {
-            label = "Game Num";
-            display-name = "Game Num";
-            bindings = <
- &kp GRAVE            &kp N1               &kp N2               &kp N3               &kp N4               &kp N6               &kp N7               &kp N8               &kp N9               &kp N0
- &kp ESC              &trans               &trans               &trans               &kp G                &trans               &trans               &kp LEFT             &kp DOWN             &kp UP               &kp RIGHT            &kp BSPC
- &trans               &kp M                &kp N5               &kp T                &kp B                &tog GAMIN           &trans               &kp HOME             &kp PG_DN            &kp PG_UP            &kp END              &kp DEL
- &trans               &trans               &trans               &mo GAMFN            &trans               &trans               &trans               &trans               &autoclk MB1
- LARISKA_BTNS
-            >;
-            sensor-bindings = <&rot_kp C_VOL_UP C_VOL_DN &lariska_scroll>;
+            sensor-bindings = <&rot_kp C_VOL_UP C_VOL_DN>;
         };
 
         super_layer {
-            label = "System";
-            display-name = "System";
+            label = "Super";
             bindings = <
- &kp F1               &kp F2               &kp F3               &kp F4               &kp F5               &kp F6               &kp F7               &kp F8               &kp F9               &kp F10
- &kp F11              &kp F12              &kp LG(LS(N3))       &kp LG(LS(N4))       &kp PSCRN            &out OUT_USB         &out OUT_BLE         &kp C_PREV           &kp C_PP             &kp C_NEXT           &kp C_VOL_DN         &kp C_VOL_UP
- &bt_macro_0          &bt_macro_1          &bt_macro_2          &bt_macro_3          &bt_macro_4          &out OUT_USB         &out OUT_BLE         &to GAMIN            &to DEFAU            &to WINDO            &bt BT_CLR           &kp C_MUTE
- &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans
- LARISKA_BTNS
+ &kp F1                &kp F2                &kp F3                &kp F4                &kp F5                &kp F6                &kp F7                &kp F8                &kp F9               &kp F10               
+ &kp F11               &kp F12              &kp LG(LS(N3))       &kp LG(LS(N4))       &kp PSCRN            &trans               &trans               &kp C_PREV            &kp C_PP              &kp C_NEXT           &kp C_VOL_DN         &kp C_VOL_UP         
+ &bt BT_SEL 0          &bt BT_SEL 1          &bt BT_SEL 2          &none                 &none                 &trans               &trans               &none                &none                &none                &bt BT_CLR           &bt C_MUTE          
+ &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               
             >;
         };
 
         mouse_layer {
             label = "Mouse";
-            display-name = "Mouse";
             bindings = <
- &deskhop2            &deskhop1            &mmv MOVE_UP         &trans               &msc MOVE_Y(140)     &kp LA(LS(A))        &kp LC(UP)           &kp LA(LS(D))        &trans               &trans
- &trans               &mmv MOVE_LEFT       &mmv MOVE_DOWN       &mmv MOVE_RIGHT      &msc MOVE_Y(-140)    &trans               &trans               &trans               &bd MB4             &bd MB5             &trans               &trans
- &mo SNIPE            MO_TOG(SCROL)        &bd MB2             &bd MB1             &bd MB3             &trans               &trans               &bd MB3             &bd MB1             &bd MB2             MO_TOG(SCROL)        &mo SNIPE
- &trans               &trans               &trans               &dmouse              &trans               &trans               &dmouse              &bd MB1             &trans
- LARISKA_BTNS
+ &none                 &none                 &mmv MOVE_UP          &trans               &msc MOVE_Y(140)      &kp LA(LS(A))        &kp LC(UP)           &kp LA(LS(D))        &trans               &trans               
+ &trans               &mmv MOVE_LEFT       &mmv MOVE_DOWN      &mmv MOVE_RIGHT     &msc MOVE_Y(-140)    &trans               &trans               &trans               &mkp MB4             &mkp MB5             &trans               &trans              
+ &mo SNIPE            MO_TOG(SCROL)       &mkp MB2             &mkp MB1             &mkp MB3             &trans               &trans               &mkp MB3             &mkp MB1             &mkp MB2           MO_TOG(SCROL)       &mo SNIPE           
+ &trans               &trans               &trans               &dmouse             &trans               &trans               &dmouse             &mkp MB1            &trans              
             >;
-            /* Keyboard encoder stays mouse-wheel; Lariska encoder = volume so
-             * volume is reachable from the trackball without the roBa encoder. */
-            sensor-bindings = <&mouse_wheel &rot_kp C_VOL_DN C_VOL_UP>;
         };
 
-        tiling_layer {
-            label = "Tile Mac";
-            display-name = "Tile Mac";
-            bindings = <
- &hs LC(LA(LS(N1))) LA(LS(N1))  &hs LC(LA(LS(N2))) LA(LS(N2))  &hs LC(LA(LS(N3))) LA(LS(N3))  &hs LC(LA(LS(N4))) LA(LS(N4))  &hs LC(LA(LS(N5))) LA(LS(N5))     &hs LC(LA(LS(N6))) LA(LS(N6))  &hs LC(LA(LS(N7))) LA(LS(N7))  &hs LC(LA(LS(N8))) LA(LS(N8))  &hs LC(LA(LS(N9))) LA(LS(N9))  &trans
- &trans                         &kp LC(F4)                     &hs LC(LA(LS(E))) LA(LS(E))    &hs LC(LA(LS(R))) LA(LS(R))    &hs LC(LA(LS(T))) LA(LS(T))    &trans  &trans     &trans                         &trans                         &trans                         &trans                         &trans
- &swapmac_rev                   &kp LS(LC(F4))                 &swapmac                       &trans                         &trans                         &trans  &trans     &trans                         &trans                         &trans                         &trans                         &trans
- &trans                         &trans                         &trans                         &trans                         &trans                         &kp LG(SPACE)        &trans                         &trans                         &trans
- LARISKA_BTNS_TILIN
-            >;
-            sensor-bindings = <&rot_kp LC(LEFT) LC(RIGHT) &lariska_ws>;
-        };
 
-        tiling_win_layer {
-            label = "Tile Win";
-            display-name = "Tile Win";
-            bindings = <
- &w1                  &w2                  &w3                  &w4                  &w5                  &w6                  &w7                  &w8                  &w9                  &trans
- &trans               &swap                &hs LC(LA(LS(E))) LA(LS(E)) &hs LC(LA(LS(R))) LA(LS(R)) &hs LC(LA(LS(T))) LA(LS(T))  &trans  &trans    &trans       &trans      &trans      &trans                         &trans
- &kp LA(LS(D))        &swap_rev            &kp LA(LS(D))               &trans                      &trans                       &trans  &trans    &trans       &trans      &trans                      &trans                      &trans
- &trans               &trans               &trans               &trans                      &trans                         &kp LGUI     &trans                         &trans                         &trans
- LARISKA_BTNS_TILWI
-            >;
-            sensor-bindings = <&alt_tab_encoder_inv &alt_tab_encoder>;
-        };
-
-        scroll {
+scroll {
             label = "Scroll";
-            display-name = "Scroll";
             bindings = <
- &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans
- &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans
- &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans
- &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans
- LARISKA_BTNS
+ &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               
+ &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               
+ &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               
+ &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               
             >;
         };
 
-        snipe {
+snipe {
             label = "Snipe";
-            display-name = "Snipe";
             bindings = <
- &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans
- &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans
- &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans
- &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans
- LARISKA_BTNS
+ &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               
+ &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               
+ &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               
+ &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               
             >;
-        };
-
-        game_fn_layer {
-            label = "Game Fn";
-            display-name = "Game Fn";
-            bindings = <
- &kp F1               &kp F2               &kp F3               &kp F4               &kp F5               &trans               &trans               &trans               &trans               &trans
- &kp F6               &kp F7               &kp F8               &kp F9               &kp F10              &trans               &trans               &trans               &trans               &trans               &trans               &trans
- &kp F11              &kp F12              &kp Y                &kp H                &kp N                &trans               &trans               &trans               &trans               &trans               &trans               &trans
- &sk_forever LCTRL    &kp EQUAL            &trans               &trans               &trans               &trans               &trans               &trans               &trans
- LARISKA_BTNS
-            >;
-            /* Lariska encoder = volume on the gaming fn layer. */
-            sensor-bindings = <&rot_kp PG_UP PG_DN &rot_kp C_VOL_DN C_VOL_UP>;
-        };
-
-        fast_scroll_layer {
-            label = "Fast Scroll";
-            display-name = "Fast Scroll";
-            bindings = <
- &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans
- &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans
- &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans
- &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans
- LARISKA_BTNS_HSC
-            >;
-            sensor-bindings = <&mouse_wheel &lariska_scroll_4x>;
-        };
-
-        hscroll_layer {
-            label = "H-Scroll";
-            display-name = "H-Scroll";
-            bindings = <
- &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans
- &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans
- &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans
- &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans
- LARISKA_BTNS_HSCRL
-            >;
-            sensor-bindings = <&mouse_wheel &lariska_hscroll>;
         };
     };
 };

@@ -1,33 +1,29 @@
+# Branch esb-dongle-test: charlesmst/main (ESB + dongle) running the roBa keymap
+# from bt-zmk-0.3. Trimmed to the roBakesb targets; the other keyboards in the
+# upstream build.yaml (charybdis, corne, lariska, prospector) are left out.
+#
+# Only one dongle variant gets flashed -- the one matching the dongle hardware.
+# Every part (dongle + both halves) must run firmware from the same build:
+# split-esb v0.8.6 changed the wire format between dongle and halves.
 ---
 include:
-  - board: xiao_ble//zmk
-    shield: settings_reset
-  # Roba ESB dongle on Holyiot nRF52840 dongle (no OLED)
+  # Dongles (pick the one matching the hardware)
   - board: holyiot_dongle_1k
     shield: roBakesb
     snippet: studio-rpc-usb-uart
     artifact-name: roBakesb_dongle_holyiot
 
-  # Prospector dongle: XIAO nRF52840 + 1.69" round LCD. Same ESB central role
-  # as the dongles below, with the stock Prospector status screen (layer roller
-  # plus a battery bar per peripheral) instead of an RGB LED or OLED.
-  - board: xiao_ble//zmk
-    shield: roBakesb_prospector prospector_adapter
-    snippet: studio-rpc-usb-uart
-    artifact-name: roBakesb_dongle_prospector
-
-  # Damex ESB dongle setup (nice!nano v2 as USB central)
   - board: nice_nano@2.0.0//zmk
     shield: roBakesb
     snippet: studio-rpc-usb-uart
     artifact-name: roBakesb_dongle
 
-  # Damex ESB dongle on Makerdiary nRF52840 MDK USB Dongle
   - board: nrf52840_mdk_dongle
     shield: roBakesb
     snippet: studio-rpc-usb-uart
     artifact-name: roBakesb_dongle_mdk
 
+  # Halves (XIAO nRF52840)
   - board: xiao_ble//zmk
     shield: roBakesb_left
     artifact-name: roBakesb_left
@@ -36,92 +32,19 @@ include:
     shield: roBakesb_right
     artifact-name: roBakesb_right
 
-  # Debug builds: low-battery LED threshold forced to 95% so the blink triggers
-  # at normal charge. Flash these to verify the LED, then flash the real
-  # roBakesb_left / roBakesb_right (threshold 25%).
+  # Settings reset: halves, and each dongle variant (clears a keymap saved by
+  # ZMK Studio, which would otherwise override the compiled one)
   - board: xiao_ble//zmk
-    shield: roBakesb_left
-    cmake-args: -DCONFIG_ROBA_SELF_BATTERY_LED_THRESHOLD=95
-    artifact-name: roBakesb_left_ledtest
+    shield: settings_reset
 
-  - board: xiao_ble//zmk
-    shield: roBakesb_right
-    cmake-args: -DCONFIG_ROBA_SELF_BATTERY_LED_THRESHOLD=95
-    artifact-name: roBakesb_right_ledtest
-
-  - board: nice_nano@2.0.0//zmk
-    shield: roBakesb_lariska
-    artifact-name: roBakesb_lariska
-
-  # Charybdis ESB dongle setup (nice!nano v2 as USB central, OLED display)
-  - board: nice_nano@2.0.0//zmk
-    shield: charybdis_esb
-    snippet: zmk-usb-logging studio-rpc-usb-uart
-    artifact-name: charybdis_esb_dongle
-
-  # Charybdis ESB dongle on Makerdiary nRF52840 MDK USB Dongle (no OLED)
-  - board: nrf52840_mdk_dongle
-    shield: charybdis_esb
-    snippet: zmk-usb-logging studio-rpc-usb-uart
-    artifact-name: charybdis_esb_dongle_mdk
-
-  # Charybdis ESB dongle on Holyiot nRF52840 dongle (no OLED)
   - board: holyiot_dongle_1k
-    shield: charybdis_esb
-    snippet: zmk-usb-logging studio-rpc-usb-uart
-    artifact-name: charybdis_esb_dongle_holyiot
+    shield: settings_reset
+    artifact-name: settings_reset_dongle_holyiot
 
   - board: nice_nano@2.0.0//zmk
-    shield: charybdis_esb_left
-    snippet: zmk-usb-logging
-    artifact-name: charybdis_esb_left
+    shield: settings_reset
+    artifact-name: settings_reset_dongle_nice_nano
 
-  - board: nice_nano@2.0.0//zmk
-    shield: charybdis_esb_right
-    snippet: zmk-usb-logging
-    artifact-name: charybdis_esb_right
-
-  - board: nice_nano@2.0.0//zmk
-    shield: charybdis_esb_lariska
-    snippet: zmk-usb-logging
-    artifact-name: charybdis_esb_lariska
-
-  # Corne ESB dongle setup (nice!nano v2 as USB central, OLED display)
-  - board: nice_nano@2.0.0//zmk
-    shield: corne_esb
-    snippet: zmk-usb-logging studio-rpc-usb-uart
-    artifact-name: corne_esb_dongle
-
-  # Corne ESB dongle on Makerdiary nRF52840 MDK USB Dongle (no OLED)
   - board: nrf52840_mdk_dongle
-    shield: corne_esb
-    snippet: zmk-usb-logging studio-rpc-usb-uart
-    artifact-name: corne_esb_dongle_mdk
-
-  # Corne ESB dongle on Holyiot nRF52840 dongle (no OLED)
-  - board: holyiot_dongle_1k
-    shield: corne_esb
-    snippet: studio-rpc-usb-uart
-    artifact-name: corne_esb_dongle_holyiot
-
-  # Corne halves with nice!view (stock shield stacked on top of ours)
-  - board: nice_nano@2.0.0//zmk
-    shield: corne_esb_left nice_view
-    snippet: zmk-usb-logging
-    artifact-name: corne_esb_left
-
-  - board: nice_nano@2.0.0//zmk
-    shield: corne_esb_right nice_view
-    snippet: zmk-usb-logging
-    artifact-name: corne_esb_right
-
-  # Right half with a Cirque trackpad on the OLED header (no display)
-  - board: nice_nano@2.0.0//zmk
-    shield: corne_esb_right_cirque
-    snippet: zmk-usb-logging
-    artifact-name: corne_esb_right_cirque
-
-  - board: nice_nano@2.0.0//zmk
-    shield: corne_esb_lariska
-    snippet: zmk-usb-logging
-    artifact-name: corne_esb_lariska
+    shield: settings_reset
+    artifact-name: settings_reset_dongle_mdk

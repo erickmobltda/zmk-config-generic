@@ -87,12 +87,12 @@
     status = "okay";
 
     scroll {
-        layers = <10>;
+        layers = <5>;   /* Scroll: layer 5 in the roBa (bt-zmk-0.3) keymap */
         input-processors = <&zip_xy_scaler 1 10>, <&zip_xy_transform (INPUT_TRANSFORM_Y_INVERT)>, <&zip_xy_to_scroll_mapper>;
     };
 
     snipe {
-        layers = <11>;
+        layers = <6>;   /* Snipe: layer 6 */
         input-processors = <&zip_xy_scaler 1 3>;
     };
 };
