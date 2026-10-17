@@ -4,9 +4,41 @@ Mudanças da minha configuração, da mais recente para a mais antiga. A `main` 
 [charlesmst/zmk-config-generic](https://github.com/charlesmst/zmk-config-generic); esta branch é a versão
 Bluetooth, com a metade direita como central e sem dongle.
 
-Toda mudança aqui exige **regravar as duas metades**, salvo onde indicado.
+Mudanças em `.conf`/`.dtsi` exigem **regravar as duas metades**; mudanças só de keymap pedem só o central (metade direita no Bluetooth, dongle no ESB).
 
 ---
+
+## 2026-10-17 — Number: setas em T invertido, Esc ↔ Cmd+F; Symbol: colchetes embaixo das chaves
+
+Testado antes pelo ZMK Studio no dongle (branch `esb-dongle-test`) e então passado para o keymap. Mudança só de
+keymap: basta regravar o central (metade **direita** nesta branch; o **dongle** na `esb-dongle-test`).
+
+**Layer Number**
+
+```
+        ANTES                                  DEPOIS
+ F     B          H    J    K    L        F      B         H     J     K    L
+Esc  Cmd+F        ←    ↓    ↑    →      Cmd+F   Esc       Home  PgUp   ↑   PgDn
+
+                  N    M    ,    .                        N     M     ,    .
+                 Home PgDn PgUp End                      End    ←     ↓    →
+```
+
+As setas voltam ao T invertido (`↑` no K, `← ↓ →` em M `,` `.`), agora com Home/PgUp/PgDn/End na linha de cima.
+`Esc` e `Cmd+F` trocaram de lugar.
+
+**Layer Symbol.** `[` e `]` foram para Z e X, logo abaixo de `{` e `}`; `` ` `` e `~` foram para C e V.
+
+**Se o keymap foi editado pelo ZMK Studio**, o que o Studio salvou continua no dongle e tem prioridade sobre o
+firmware gravado. Depois de gravar, use **Restore Stock Settings** no Studio (ou grave o `settings_reset` do dongle
+e depois o firmware de novo).
+
+## 2026-10-14 — Teste do dongle ESB com este keymap (branch `esb-dongle-test`)
+
+Branch criada a partir da `main` do Charles (`0234ece`) com este keymap no lugar do `roBakesb.keymap` e as
+layers de scroll/snipe do trackball ajustadas para 5/6 no `roBakesb.overlay`. Dongle: nRF52840 MDK USB Dongle
+(Makerdiary) — **o bootloader abre com dois toques rápidos no botão**, com o dongle conectado (segurar o botão ao
+conectar não funciona neste). Dongle e metades precisam vir do mesmo build.
 
 ## 2026-10-13 — P3 volta a space/shift; atalhos de Cmd na layer Number
 
