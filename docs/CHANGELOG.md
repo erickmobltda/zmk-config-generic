@@ -8,6 +8,35 @@ Mudanças em `.conf`/`.dtsi` exigem **regravar as duas metades**; mudanças só 
 
 ---
 
+## 2026-10-18 — Layer Execute no P3 (Raycast + tmux); Shift sai do P3
+
+**P3:** toque continua sendo espaço; **segurar** agora liga a layer **Execute** (layer 7) em vez de Shift. Mesmo
+tempo de decisão de antes (hold-tap `&hx`, 200 ms, tap-preferred). O Shift fica só no P4 segurado.
+
+**Layer Execute** (segurando o P3):
+
+```
+ Esquerda — Hyper (Ctrl+Option+Cmd+Shift) + a própria letra, para atalhos do Raycast
+   Q W E R T / A S D F G / Z X C V B
+
+ Direita — tmux (Ctrl+B + tecla)
+   Y  w  navegar        U  )  próx. sessão     I  nova sessão   O  fechar sessão   P  $  renomear sessão
+   H  —                 J  n  próx. janela     K  c  nova janela L  &  fechar janela  ;  ,  renomear janela
+   N  z  zoom           M  o  próx. pane       ,  "  novo pane ↓ .  x  fechar pane    /  —
+
+ P4: Shift+Enter (mesmo gesto de antes: segura P3, toca P4)
+```
+
+- O tmux usa uma macro com parâmetro (`&tmux X` = `Ctrl+B`, `x`). Nova/fechar sessão não têm tecla padrão no
+  tmux, então são macros que digitam no prompt (`Ctrl+B :`): `new-session` e
+  `set -g detach-on-destroy off ; confirm-before kill-session` (pede y/n e continua no tmux, em outra sessão).
+  Essa leva uns 2–3 s digitando (padrão do ZMK: 15 ms + 30 ms por tecla).
+- Os apps de cada Hyper+letra são escolhidos no Raycast, então trocar app não exige regravar o teclado.
+- Teclas sem atalho são `&none`, para um P3 segurado com tecla errada não digitar letra.
+
+**Efeitos colaterais:** maiúsculas agora só pelo P4 (as da mão direita usam o polegar da mesma mão); seleção com
+setas = P2 + P4 segurado + seta.
+
 ## 2026-10-17 — Number: setas em T invertido, Esc ↔ Cmd+F; Symbol: colchetes embaixo das chaves
 
 Testado antes pelo ZMK Studio no dongle (branch `esb-dongle-test`) e então passado para o keymap. Mudança só de

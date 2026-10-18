@@ -19,6 +19,9 @@
 #define MOUSE 4
 #define SCROL 5
 #define SNIPE 6
+#define EXECU 7
+
+#define HYPER(key) LC(LA(LG(LS(key))))   // Ctrl+Option+Cmd+Shift: free shortcuts for Raycast
 
 / {
     cursor_move: cursor_move {
@@ -80,6 +83,16 @@
             flavor = "tap-preferred";
             bindings = <&kp>, <&kp>;
         };
+        hx: hold_layer {
+            compatible = "zmk,behavior-hold-tap";
+            label = "HOLD_LAYER";
+            #binding-cells = <2>;
+            tapping-term-ms = <200>;
+            quick-tap-ms = <0>;
+            flavor = "tap-preferred";
+            bindings = <&mo>, <&kp>;
+        };
+
         mo_tog: behavior_mo_tog {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
@@ -177,6 +190,27 @@
             bindings = <&mo MOUSE>, <&mo SCROL>,  <&mo SNIPE>;
         };
 
+        // tmux: Ctrl+B then the given key (&tmux W = prefix, w)
+        tmux: tmux_prefix {
+            compatible = "zmk,behavior-macro-one-param";
+            #binding-cells = <1>;
+            bindings = <&kp LC(B)>, <&macro_param_1to1>, <&kp MACRO_PLACEHOLDER>;
+        };
+
+        // tmux: new session via the command prompt (no default key for it)
+        tmux_ns: tmux_new_session {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp LC(B)>, <&kp COLON &kp N &kp E &kp W &kp MINUS &kp S &kp E &kp S &kp S &kp I &kp O &kp N &kp RET>;
+        };
+
+        // tmux: stay in tmux after killing the session, and ask y/n first
+        tmux_ks: tmux_kill_session {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp LC(B)>, <&kp COLON &kp S &kp E &kp T &kp SPACE &kp MINUS &kp G &kp SPACE &kp D &kp E &kp T &kp A &kp C &kp H &kp MINUS &kp O &kp N &kp MINUS &kp D &kp E &kp S &kp T &kp R &kp O &kp Y &kp SPACE &kp O &kp F &kp F &kp SPACE &kp SEMI &kp SPACE &kp C &kp O &kp N &kp F &kp I &kp R &kp M &kp MINUS &kp B &kp E &kp F &kp O &kp R &kp E &kp SPACE &kp K &kp I &kp L &kp L &kp MINUS &kp S &kp E &kp S &kp S &kp I &kp O &kp N &kp RET>;
+        };
+
     };
 
     keymap {
@@ -188,7 +222,7 @@
  &kp Q                &kp W                &kp E                &kp R                &kp T                &kp Y                &kp U                &kp I                &kp O                &kp P               
  &kp A                &hm LCTRL S          &hm LALT D           &hm LGUI F           &kp G                &kp LG(LC(LS(N4)))   &none                &kp H                &hm LGUI J           &hm RALT K           &hm RCTRL L          &kp FSLH             
  &kp Z                &kp X                &kp C                &kp V                &kp B                &kp TAB                &none                &kp N                &kp M                &kp COMMA            &kp DOT              &kp SEMI             
- &none                &trans               &none                &mo MOUSE            &mo NUMBE            &hm LSHFT SPACE      &hk RSHFT RET        &mo SYMBO            &none 
+ &none                &trans               &none                &mo MOUSE            &mo NUMBE            &hx EXECU SPACE      &hk RSHFT RET        &mo SYMBO            &none 
             >;
 
             sensor-bindings = <&mouse_wheel>;
@@ -255,6 +289,16 @@ snipe {
  &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               
  &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               
  &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               &trans               
+            >;
+        };
+
+        execute_layer {
+            label = "Execute";
+            bindings = <
+ &kp HYPER(Q)         &kp HYPER(W)         &kp HYPER(E)         &kp HYPER(R)         &kp HYPER(T)         &tmux W              &tmux RPAR           &tmux_ns             &tmux_ks             &tmux DLLR           
+ &kp HYPER(A)         &kp HYPER(S)         &kp HYPER(D)         &kp HYPER(F)         &kp HYPER(G)         &none                &none                &none                &tmux N              &tmux C              &tmux AMPS           &tmux COMMA          
+ &kp HYPER(Z)         &kp HYPER(X)         &kp HYPER(C)         &kp HYPER(V)         &kp HYPER(B)         &none                &none                &tmux Z              &tmux O              &tmux DQT            &tmux X              &none                
+ &none                &none                &none                &none                &none                &trans               &kp LS(RET)          &none                &none                
             >;
         };
     };

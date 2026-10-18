@@ -46,6 +46,7 @@ Duplo clique no reset da metade → aparece um drive USB → copiar o `.uf2` par
 | 4 | Mouse | Segurar **P1** (polegar externo esquerdo) |
 | 5 | Scroll | Mouse (P1) + **X** ou **.** — toque rápido trava. Faz a trackball rolar a tela |
 | 6 | Snipe | Mouse (P1) + **Z** ou **;**. Cursor 3× mais lento |
+| 7 | Execute | Segurar **P3** (o espaço). Esquerda: Hyper + letra para o Raycast; direita: tmux; P4: Shift+Enter |
 
 Scroll e Snipe não têm teclas: são as layers que os *input processors* do trackball observam, definidas em `config/boards/shields/roBa/roBa.dtsi`. Se renumerar as layers, **é preciso atualizar os `layers = <5>` e `<6>` nesse arquivo**.
 
