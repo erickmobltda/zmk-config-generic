@@ -94,12 +94,15 @@
             bindings = <&kp>, <&kp>;
         };
 
+        // tap = key, hold = layer. require-prior-idle-ms: if another key was pressed in the last
+        // 150 ms (mid-word), it resolves as tap right away, so typing never turns into the layer.
         hx: hold_layer {
             compatible = "zmk,behavior-hold-tap";
             label = "HOLD_LAYER";
             #binding-cells = <2>;
             tapping-term-ms = <200>;
             quick-tap-ms = <0>;
+            require-prior-idle-ms = <150>;
             flavor = "tap-preferred";
             bindings = <&mo>, <&kp>;
         };
@@ -231,7 +234,7 @@
             label = "Mac";
             bindings = <
  &kp Q                &kp W                &kp E                &kp R                &kp T                &kp Y                &kp U                &kp I                &kp O                &kp P               
- &kp A                &hm LCTRL S          &hm LALT D           &hm LGUI F           &kp G                &kp LG(LC(LS(N4)))   &none                &kp H                &hm LGUI J           &hm RALT K           &hm RCTRL L          &kp FSLH             
+ &hx EXECU A          &hm LCTRL S          &hm LALT D           &hm LGUI F           &kp G                &kp LG(LC(LS(N4)))   &none                &kp H                &hm LGUI J           &hm RALT K           &hm RCTRL L          &kp FSLH             
  &kp Z                &kp X                &kp C                &kp V                &kp B                &kp TAB                &none                &kp N                &kp M                &kp COMMA            &kp DOT              &kp SEMI             
  &none                &trans               &none                &mo MOUSE            &mo NUMBE            &hm LSHFT SPACE      &hk RSHFT RET        &mo SYMBO            &none 
             >;
@@ -307,7 +310,7 @@ snipe {
             label = "Execute";
             bindings = <
  &kp HYPER(Q)         &kp HYPER(W)         &kp HYPER(E)         &kp HYPER(R)         &kp HYPER(T)         &tmux W              &tmux RPAR           &tmux_ns             &tmux_ks             &tmux DLLR           
- &kp HYPER(A)         &kp HYPER(S)         &kp HYPER(D)         &kp HYPER(F)         &kp HYPER(G)         &none                &none                &none                &tmux N              &tmux C              &tmux AMPS           &tmux COMMA          
+ &trans               &kp HYPER(S)         &kp HYPER(D)         &kp HYPER(F)         &kp HYPER(G)         &none                &none                &none                &tmux N              &tmux C              &tmux AMPS           &tmux COMMA          
  &kp HYPER(Z)         &kp HYPER(X)         &kp HYPER(C)         &kp HYPER(V)         &kp HYPER(B)         &none                &none                &tmux Z              &tmux O              &tmux DQT            &tmux X              &none                
  &none                &none                &none                &none                &none                &trans               &kp LS(RET)          &none                &none                
             >;
