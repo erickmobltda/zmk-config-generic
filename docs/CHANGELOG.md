@@ -8,6 +8,35 @@ Mudanças em `.conf`/`.dtsi` exigem **regravar as duas metades**; mudanças só 
 
 ---
 
+## 2026-10-24 — Execute ganha gatilho: segurar o A
+
+**Mac, tecla A:** toque = A; **segurar 200 ms = layer Execute** (hold-tap `&hx`, tap-preferred). Com
+`require-prior-idle-ms = 150`: se outra tecla foi apertada nos 150 ms anteriores (meio de palavra), o A sai como
+letra na hora — a Execute só liga quando o A é a primeira tecla depois de uma pausa.
+
+- Mindinho no A deixa Hyper+Q e Hyper+Z fora de alcance (Hyper+A virou o próprio gatilho). Hyper+Q já não era
+  reconhecido pelo Raycast — provavelmente porque Ctrl+Cmd+Q é o atalho do macOS para bloquear a tela.
+- O tmux, na mão direita, fica todo livre com o mindinho esquerdo segurando o A.
+- Na Execute, o P3 volta a ser transparente (espaço/Shift); o P4 continua Shift+Enter.
+
+## 2026-10-24 — P3 volta a ser espaço/Shift; Number: segurar 1/4/5 = Cmd+Q/R/T
+
+**P3 de volta a `&hm LSHFT SPACE`.** Com o P3 como gatilho da Execute, maiúsculas feitas no automático viravam
+atalhos (e as macros do tmux terminam em Enter). A layer **Execute continua no keymap, mas sem gatilho** até
+escolhermos outro. Shift+Enter volta a ser P3 segurado + P4; seleção com setas volta a ser P2 + P3 + seta.
+
+**Number: toque = número, segurar 400 ms = Cmd + a letra da posição** (hold-tap novo `&hn`, tap-preferred, 400 ms
+— o dobro do home row, para um Cmd+Q exigir intenção):
+
+```
+ tecla   toque   segurar 400 ms
+  Q        1       Cmd+Q
+  R        4       Cmd+R
+  T        5       Cmd+T
+```
+
+Esses três números perdem a repetição ao segurar e saem ao soltar a tecla (não ao apertar).
+
 ## 2026-10-18 — Layer Execute no P3 (Raycast + tmux); Shift sai do P3
 
 **P3:** toque continua sendo espaço; **segurar** agora liga a layer **Execute** (layer 7) em vez de Shift. Mesmo
